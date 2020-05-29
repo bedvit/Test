@@ -763,3 +763,101 @@ int main()
 	return 0;
 }
 
+
+//
+//extern "C" __declspec(dllexport) LPXLOPER12  WINAPI FindInCSV(char *  arg1, char *  arg2, wchar_t *  arg3)
+//{
+//	LPXLOPER12 OperOut = new XLOPER12;
+//	OperOut->xltype = xltypeStr | xlbitDLLFree;
+//	OperOut->val.str = new XCHAR[32767 + 2]; //+1 под размер + 1 под нуль-терминатор
+//	OperOut->val.str[0] = 0;
+//	OperOut->val.str[1] = '\0';
+//	std::filebuf fb;
+//	if (fb.open(arg1, std::ios::in | std::ios::binary))
+//	{
+//		int x = 0;
+//		int lenStrOut = 0; //0й элемент - размер строки
+//		int lenArg3 = wcslen(arg3);
+//		bool overflow = false;
+//		std::string str;
+//		std::istream is(&fb);
+//		XCHAR* strTmp = OperOut->val.str + 1;
+//
+//		while (is)
+//		{
+//			std::getline(is, str);
+//			size_t found = str.find(arg2);
+//			if (found != std::string::npos)
+//			{
+//				x++;
+//				if (lenArg3 > 0 && x > 1)
+//				{
+//					if (lenStrOut + lenArg3 > 32767) { overflow = true;  goto end_; }
+//					wcscpy(strTmp + lenStrOut, arg3);
+//					lenStrOut = lenStrOut + lenArg3;
+//
+//					if (lenStrOut + str.length() > 32767) { overflow = true;  goto end_; }
+//					MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), -1, strTmp + lenStrOut, str.length() + 1);
+//					lenStrOut = lenStrOut + str.length();
+//				}
+//				else if (lenArg3 > 0)
+//				{
+//					if (lenStrOut + str.length() > 32767) { overflow = true;  goto end_; }
+//					MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), -1, strTmp + lenStrOut, str.length() + 1);
+//					lenStrOut = lenStrOut + str.length();
+//				}
+//				else
+//				{
+//					if (lenStrOut + str.length() > 32767) { overflow = true;  goto end_; }
+//					MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), -1, strTmp + lenStrOut, str.length() + 1);
+//					lenStrOut = lenStrOut + str.length();
+//					goto end_;
+//				}
+//			};
+//		}
+//	end_:
+//		if (overflow) {
+//			wcscpy(strTmp, L"Qverflow. Max char 32767\0");
+//			OperOut->val.str[0] = 24;
+//		}
+//		else
+//		{
+//			OperOut->val.str[0] = lenStrOut;
+//		}
+//		fb.close();
+//	}
+//	return OperOut;
+//}
+//
+//extern "C" __declspec(dllexport) LPXLOPER12  WINAPI GetRowCSV(char *  arg1, int  arg2)
+//{
+//	LPXLOPER12 OperOut = new XLOPER12{ xltypeNil };
+//
+//	std::filebuf fb;
+//	if (fb.open(arg1, std::ios::in | std::ios::binary))
+//	{
+//		int x = 0;
+//		std::istream is(&fb);
+//		while (is) {
+//			std::string str;
+//			std::getline(is, str);
+//			if (++x == arg2)
+//			{
+//				fb.close();
+//				OperOut->xltype = xltypeStr | xlbitDLLFree;
+//				OperOut->val.str = new XCHAR[str.length() + 2];//+1 под размер+1 под нуль-терминатор
+//				XCHAR* strTmp = new XCHAR[str.length() + 1]; //+1 под нуль - терминатор
+//				MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), -1, strTmp, str.length() + 1);
+//				for (int i = 0; i <= str.length(); i++)
+//				{
+//					OperOut->val.str[i + 1] = strTmp[i];
+//				}
+//				OperOut->val.str[0] = str.length();
+//				delete[] strTmp;
+//				return OperOut;
+//			};
+//		}
+//		fb.close();
+//	}
+//	return OperOut;
+//}
