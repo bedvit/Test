@@ -47,7 +47,7 @@ int GetRowsCountCSVansi(PCTSTR path)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
+		FILE_FLAG_OVERLAPPED,// | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
@@ -82,11 +82,12 @@ int GetRowsCountCSVansi(PCTSTR path)
 			case ERROR_HANDLE_EOF:
 				// мы достигли конца файла 
 				// закрываем дескрипторы
-				CloseHandle(hFile);
-				CloseHandle(hEndRead);
-				delete[] notalign;
-				delete[] bufWork;
-				return strCount;
+				break;
+				//CloseHandle(hFile);
+				//CloseHandle(hEndRead);
+				//delete[] notalign;
+				//delete[] bufWork;
+				//return strCount;
 			default:
 				// закрываем дескрипторы
 				CloseHandle(hFile);
@@ -98,12 +99,12 @@ int GetRowsCountCSVansi(PCTSTR path)
 		}
 		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
 		find = bufWork; //буфер
-		find = strstr(find, "\n");
+		find = strchr(find, '\n');
 		while (find != NULL)
 		{
 			find = find + 1;
 			strCount++;
-			find = strstr(find, "\n");
+			find = strchr(find, '\n');
 		}
 		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
 
@@ -144,7 +145,7 @@ int GetRowsCountCSVansi(PCTSTR path)
 	}
 }
 
-int GetRowCSVansi(PCTSTR path, int strNum=1)
+int GetRowCSVansi(PCTSTR path, int strNum)
 {
 	HANDLE  hFile;     // дескриптор файла
 	HANDLE  hEndRead;  // дескриптор события
@@ -176,7 +177,7 @@ int GetRowCSVansi(PCTSTR path, int strNum=1)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
+		FILE_FLAG_OVERLAPPED,  // | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
@@ -206,7 +207,7 @@ int GetRowCSVansi(PCTSTR path, int strNum=1)
 			{
 			//эти ошибки смотрм после завершения асинхронной операции чтения, для возможности обработать рабочий буфер
 			case ERROR_IO_PENDING: { break; }		 // асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
-			//case ERROR_HANDLE_EOF: {goto return0; } // мы достигли конца файла читалкой ReadFile
+			case ERROR_HANDLE_EOF: {break; } // мы достигли конца файла читалкой ReadFile
 			default: {goto return1; }// другие ошибки
 			}
 		}
@@ -219,7 +220,7 @@ int GetRowCSVansi(PCTSTR path, int strNum=1)
 			{
 				if (strCount == strNum)
 				{
-					findNext = strstr(find, "\n");
+					findNext = strchr(find, '\n');
 					if (findNext == NULL)
 					{
 						strOut = strOut + std::string(find);
@@ -231,7 +232,7 @@ int GetRowCSVansi(PCTSTR path, int strNum=1)
 						goto return0;
 					}
 				}
-				find = strstr(find, "\n");
+				find = strchr(find, '\n');
 				if (find != NULL)
 				{
 					find++;
@@ -279,7 +280,7 @@ return1:
 	return -1;
 }
 
-int FindInCSVansi(PCTSTR path, PCTSTR find)
+int FindInCSVansi(PCTSTR path, const char* findStr, bool multiLine)
 {
 HANDLE  hFile;     // дескриптор файла
 HANDLE  hEndRead;  // дескриптор события
@@ -294,6 +295,12 @@ char* findNext;// указатель для поиска следующий
 int strCount = 1; //счетчик строк
 std::string strOut;
 DWORD  dwBytesReadWork;
+//bool goFind = true;
+//bool goBuf = false;
+//bool goBackBuf = false;
+//int BackCount = 0;
+int findStatus = 0;
+DWORD ignoreOffset=0;
 
 // создаем события с автоматическим сбросом
 hEndRead = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -311,7 +318,7 @@ hFile = CreateFile(
 	FILE_SHARE_READ,       // совместный доступ к файлу
 	NULL,                  // защиты нет
 	OPEN_EXISTING,         // открываем существующий файл
-	FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
+	FILE_FLAG_OVERLAPPED,// | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
 	NULL                   // шаблона нет
 );
 // проверяем на успешное открытие
@@ -341,39 +348,107 @@ for (;;)
 		{
 			//эти ошибки смотрм после завершения асинхронной операции чтения, для возможности обработать рабочий буфер
 		case ERROR_IO_PENDING: { break; }		 // асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
-		//case ERROR_HANDLE_EOF: {goto return0; } // мы достигли конца файла читалкой ReadFile
+		case ERROR_HANDLE_EOF: { break; } // мы достигли конца файла читалкой ReadFile
 		default: {goto return1; }// другие ошибки
 		}
 	}
 	//работаем асинхронно, выполняем код, пока ждем чтение с диска//
-	if (ovl.Offset > 0)//если рабочий буфер заполнен
+	if (ovl.Offset!=ignoreOffset)//игнорируем первую итерацию и этерации прошедшие следующим буфером, когда нужно было вернутся в предыдущий буфер
 	{
 		bufWork[dwBytesReadWork] = '\0';//добавим нуль-терминатор
 		find = bufWork; //новый буфер
-		do //считаем строки в буфере
+	go_1:
+		char* strStart = bufWork;
+		char* strEnd = NULL;
+
+		if (findStatus == 0)//goFind
 		{
-			if (strCount == strNum)
+			find = strstr(find, findStr);
+			if (find != NULL) //если нужная подстрока найдена
 			{
-				findNext = strstr(find, "\n");
-				if (findNext == NULL)
+
+				for (strStart = find; strStart >= bufWork; strStart--)
 				{
-					strOut = strOut + std::string(find);
+					if (*strStart == '\n') { break; } //если нашли начало строки
 				}
-				else
+				strStart++;
+				if (ovl.Offset == nNumberOfBytesToRead || strStart != bufWork)//если первый буфер или найдено начало строки
 				{
-					findNext++;
-					strOut = strOut + std::string(find, size_t(findNext - find));
+					strEnd = strchr(find, '\n');
+					if (strEnd != NULL) //если нашли конец строки
+					{
+						strOut = strOut + std::string(strStart, strEnd - strStart + 1);
+						if (!multiLine)
+						{
+							goto return0;
+						}
+						else//поиск в следующей строке начинаем с конца предыдущей
+						{
+							find = strEnd++;
+							findStatus = 0;
+							goto go_1;
+						}
+					}
+					else//если конец строки в следующих буферах или конец файла
+					{
+						strOut = strOut + std::string(strStart);
+						findStatus = 1;
+					}
+				}
+				else //если начало строки не найдено и это не первый буфер смотрим предыдущий буфер
+				{
+					findStatus = 2;
+					//ignoreOffset = ovl.Offset - nNumberOfBytesToRead;
+					ovl.Offset -= nNumberOfBytesToRead * 3;
+					ignoreOffset = ovl.Offset + nNumberOfBytesToRead;
+				}
+			} //если нужная подстрока найдена
+		}
+		else if (findStatus == 1)//goBuf
+		{
+			strEnd = strchr(find, '\n');
+			if (strEnd != NULL) //если нашли конец строки
+			{
+				strOut = strOut + std::string(find, strEnd - find+1);
+				findStatus = 0;
+				if (!multiLine)
+				{
 					goto return0;
 				}
+				else//поиск в следующей строке начинаем с конца предыдущей
+				{
+					find = strEnd++;
+					findStatus = 0;
+					goto go_1;
+				}
 			}
-			find = strstr(find, "\n");
-			if (find != NULL)
+			else//если конец строки в следующих буферах или конец файла
 			{
-				find++;
-				strCount++;
+				strOut = strOut + std::string(find);
 			}
-		} while (find != NULL);
+		}
+		else if (findStatus == 2)//goBackBuf
+		{
 
+			for (strStart = bufWork + dwBytesReadWork; strStart >= bufWork; strStart--)
+			{
+				if (*strStart == '\n') { break; }//если нашли начало строки
+			}
+			strStart++;
+			if (ovl.Offset == nNumberOfBytesToRead || strStart != bufWork)//если первый буфер или найдено начало строки
+			{
+				find = strStart++;
+				findStatus = 1;
+				goto go_1;
+			}
+			else
+			{
+				//ignoreOffset = ovl.Offset - nNumberOfBytesToRead;
+				ovl.Offset -= nNumberOfBytesToRead * 3;//если начало строки не найдлено смотрим предыдущий буфер
+				ignoreOffset = ovl.Offset + nNumberOfBytesToRead;
+			}
+
+		}
 	}
 	//работаем асинхронно, выполняем код, пока ждем чтение с диска//
 
@@ -385,7 +460,10 @@ for (;;)
 	{
 		switch (dwError = GetLastError())// решаем что делать с кодом ошибки
 		{
-		case ERROR_HANDLE_EOF: {goto return0; }// мы достигли конца файла в ходе асинхронной операции
+		case ERROR_HANDLE_EOF: 
+		{
+			if (findStatus != 2) goto return0; break;
+		}// мы достигли конца файла в ходе асинхронной операции
 		default: {goto return1; }// другие ошибки
 		}// конец процедуры switch (dwError = GetLastError())
 	}
@@ -413,204 +491,6 @@ delete[] buf;
 delete[] bufWork;
 return -1;
 }
-//#include <vector>
-//BOOL ReadFromFileAsync2(PCTSTR path)
-//{
-//	BOOL bResult = FALSE;
-//
-//	HANDLE hFile = CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED /*| FILE_FLAG_NO_BUFFERING*/, NULL);
-//	if (hFile == INVALID_HANDLE_VALUE)
-//	{
-//		_tprintf_s(TEXT("Error opening file: %s\n"), path);
-//		return FALSE;
-//	}
-//	DWORD dwNumReads;
-//	DWORD dwLineSize = 536870912; // size of each line, in bytes
-//	std::vector<BYTE> bSecondLineBuf(dwLineSize);
-//	std::vector<BYTE> bFourthLineBuf(dwLineSize);
-//
-//
-//	OVERLAPPED oReadSecondLine = { 0 };
-//	OVERLAPPED oReadFourthLine = { 0 };
-//
-//	oReadSecondLine.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-//	if (!oReadSecondLine.hEvent)
-//	{
-//		_tprintf_s(TEXT("Error creating I/O event for reading second line\n"));
-//		goto done;
-//	}
-//	oReadSecondLine.Offset = 0; // offset of second line
-//
-//	oReadFourthLine.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-//	if (!oReadFourthLine.hEvent)
-//	{
-//		_tprintf_s(TEXT("Error creating I/O event for reading fourth line\n"));
-//		goto done;
-//	}
-//	oReadFourthLine.Offset = 536870912; // offset of fourth line
-//
-//	if (!ReadFile(hFile, &bSecondLineBuf[0], dwLineSize, NULL, &oReadSecondLine))
-//	{
-//		if (GetLastError() != ERROR_IO_PENDING)
-//		{
-//			_tprintf_s(TEXT("Error starting I/O to read second line\n"));
-//			goto done;
-//		}
-//	}
-//
-//	if (!ReadFile(hFile, &bFourthLineBuf[0], dwLineSize, NULL, &oReadFourthLine))
-//	{
-//		if (GetLastError() != ERROR_IO_PENDING)
-//		{
-//			_tprintf_s(TEXT("Error starting I/O to read fourth line\n"));
-//			CancelIo(hFile);
-//			goto done;
-//		}
-//	}
-//
-//	// perform some stuff asynchronously
-//	_tprintf_s(TEXT("HEY\n"));
-//
-//	HANDLE hEvents[2];
-//	hEvents[0] = oReadSecondLine.hEvent;
-//	hEvents[1] = oReadFourthLine.hEvent;
-//
-//	OVERLAPPED* pOverlappeds[2];
-//	pOverlappeds[0] = &oReadSecondLine;
-//	pOverlappeds[1] = &oReadFourthLine;
-//
-//	BYTE* pBufs[2];
-//	pBufs[0] = &bSecondLineBuf[0];
-//	pBufs[1] = &bFourthLineBuf[0];
-//
-//	dwNumReads = _countof(hEvents);
-//
-//	do
-//	{
-//		DWORD dwWaitRes = WaitForMultipleObjects(dwNumReads, hEvents, FALSE, INFINITE);
-//		if (dwWaitRes == WAIT_FAILED)
-//		{
-//			_tprintf_s(TEXT("Error waiting for I/O to finish\n"));
-//			CancelIo(hFile);
-//			goto done;
-//		}
-//
-//		if ((dwWaitRes >= WAIT_OBJECT_0) && (dwWaitRes < (WAIT_OBJECT_0 + dwNumReads)))
-//		{
-//			DWORD dwIndex = dwWaitRes - WAIT_OBJECT_0;
-//
-//			_tprintf_s(TEXT("String that was read from file: "));
-//
-//			//for (int i = 0; i < pOverlappeds[dwIndex]->InternalHigh; ++i)
-//			//	_tprintf_s(TEXT("%c"), (TCHAR)pBufs[dwIndex][i]);
-//			//_tprintf_s(TEXT("\n"));
-//
-//			--dwNumReads;
-//			if (dwNumReads == 0)
-//				break;
-//
-//			if (dwIndex == 0)
-//			{
-//				hEvents[0] = hEvents[1];
-//				pOverlappeds[0] = pOverlappeds[1];
-//				pBufs[0] = pBufs[1];
-//			}
-//		}
-//	} while (true);
-//
-//done:
-//	if (oReadSecondLine.hEvent) CloseHandle(oReadSecondLine.hEvent);
-//	if (oReadFourthLine.hEvent) CloseHandle(oReadFourthLine.hEvent);
-//	CloseHandle(hFile);
-//
-//	return bResult;
-//
-//
-////
-////
-////	BOOL bResult = FALSE;
-////
-////	HANDLE hFile = CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED /*| FILE_FLAG_NO_BUFFERING*/, NULL);
-////	if (hFile == INVALID_HANDLE_VALUE)
-////	{
-////		_tprintf_s(TEXT("Error opening file: %s\n"), path);
-////		return FALSE;
-////	}
-////	DWORD dwWaitRes;
-////	DWORD dwLineSize = 250; // size of each line, in bytes
-////	std::vector<BYTE> bSecondLineBuf(dwLineSize);
-////	std::vector<BYTE> bFourthLineBuf(dwLineSize);
-////
-////	OVERLAPPED oReadSecondLine = { 0 };
-////	OVERLAPPED oReadFourthLine = { 0 };
-////
-////	oReadSecondLine.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-////	if (!oReadSecondLine.hEvent)
-////	{
-////		_tprintf_s(TEXT("Error creating I/O event for reading second line\n"));
-////		goto done;
-////	}
-////	oReadSecondLine.Offset = 250; // offset of second line
-////
-////	oReadFourthLine.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-////	if (!oReadFourthLine.hEvent)
-////	{
-////		_tprintf_s(TEXT("Error creating I/O event for reading fourth line\n"));
-////		goto done;
-////	}
-////	oReadFourthLine.Offset = 500; // offset of fourth line
-////
-////	if (!ReadFile(hFile, &bSecondLineBuf[0], dwLineSize, NULL, &oReadSecondLine))
-////	{
-////		if (GetLastError() != ERROR_IO_PENDING)
-////		{
-////			_tprintf_s(TEXT("Error starting I/O to read second line\n"));
-////			goto done;
-////		}
-////	}
-////
-////	if (!ReadFile(hFile, &bFourthLineBuf[0], dwLineSize, NULL, &oReadFourthLine))
-////	{
-////		if (GetLastError() != ERROR_IO_PENDING)
-////		{
-////			_tprintf_s(TEXT("Error starting I/O to read fourth line\n"));
-////			CancelIo(hFile);
-////			goto done;
-////		}
-////	}
-////
-////	// perform some stuff asynchronously
-////	_tprintf_s(TEXT("HEY\n"));
-////
-////	HANDLE hEvents[2];
-////	hEvents[0] = oReadSecondLine.hEvent;
-////	hEvents[1] = oReadFourthLine.hEvent;
-////
-////	dwWaitRes = WaitForMultipleObjects(_countof(hEvents), hEvents, TRUE, INFINITE);
-////	if (dwWaitRes == WAIT_FAILED)
-////	{
-////		_tprintf_s(TEXT("Error waiting for I/O to finish\n"));
-////		CancelIo(hFile);
-////		goto done;
-////	}
-////
-////	_tprintf_s(TEXT("Strings that were read from file: "));
-////
-////	for (int i = 0; i < oReadSecondLine.InternalHigh; ++i)
-////		_tprintf_s(TEXT("%c"), (TCHAR)&bSecondLineBuf[i]);
-////	_tprintf_s(TEXT("\n"));
-////
-////	for (int i = 0; i < oReadFourthLine.InternalHigh; ++i)
-////		_tprintf_s(TEXT("%c"), (TCHAR)&bFourthLineBuf[i]);
-////	_tprintf_s(TEXT("\n"));
-////
-////done:
-////	if (oReadSecondLine.hEvent) CloseHandle(oReadSecondLine.hEvent);
-////	if (oReadFourthLine.hEvent) CloseHandle(oReadFourthLine.hEvent);
-////	CloseHandle(hFile);
-////
-////	return bResult;
-//}
 
 
 int createfile() //создание файла для теста
@@ -745,7 +625,7 @@ int main()
 
 	int x;
 	t1 = clock();
-	if ((x = GetRowCSVansi(L"D:\\CSV_0_GB.csv",2)) > -1)
+	if ((x = FindInCSVansi(L"D:\\CSV_0_GB.csv","01",1)) > -1)
 	{
 		t2 = clock();
 		printf("HDD WDC WD10EACS-00ZJB0 (1000 GB, SATA-II): GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
@@ -753,7 +633,7 @@ int main()
 	}
 
 	t1 = clock();
-	if ((x = GetRowCSVansi(L"C:\\CSV_1_GB.csv", 4000000)) > -1)
+	if ((x = FindInCSVansi(L"C:\\CSV_1_GB.csv","4000000",0)) > -1)
 	{
 		t2 = clock();
 		printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
