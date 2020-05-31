@@ -20,11 +20,7 @@ int GetRowsCountCSVansi(PCTSTR path)
 	HANDLE  hEndRead;  // дескриптор события
 	OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу
 	const DWORD  nNumberOfBytesToRead = 16777216;//8388608;//читаем в буфер байты
-	//char* buf = new char[nNumberOfBytesToRead]; //буфер CreateFile
-	char* notalign = new char[nNumberOfBytesToRead + 512]; //память
-	char* buf = notalign; //буфер
-	if (size_t(buf) % 512) { buf += 512 - (size_t(buf) % 512); }
-
+	char* buf = new char[nNumberOfBytesToRead]; //память
 	char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
 	bufWork[0] = '\0';//добавим нуль-терминатор
 	bufWork[nNumberOfBytesToRead] = '\0';//добавим нуль-терминатор
@@ -47,14 +43,14 @@ int GetRowsCountCSVansi(PCTSTR path)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED,// | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод//отключаем системный буфер
+		FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hEndRead);
-		delete[] notalign;
+		delete[] buf;
 		delete[] bufWork;
 		return -1;
 	}
@@ -63,7 +59,7 @@ int GetRowsCountCSVansi(PCTSTR path)
 	{
 		DWORD  dwBytesRead;
 		DWORD  dwError;
-		char* find = buf; //буфер
+		find = buf; //буфер
 		// читаем одну запись
 		if (!ReadFile(
 			hFile,           // дескриптор файла
@@ -83,16 +79,11 @@ int GetRowsCountCSVansi(PCTSTR path)
 				// мы достигли конца файла 
 				// закрываем дескрипторы
 				break;
-				//CloseHandle(hFile);
-				//CloseHandle(hEndRead);
-				//delete[] notalign;
-				//delete[] bufWork;
-				//return strCount;
 			default:
 				// закрываем дескрипторы
 				CloseHandle(hFile);
 				CloseHandle(hEndRead);
-				delete[] notalign;
+				delete[] buf;
 				delete[] bufWork;
 				return -1;
 			}
@@ -124,14 +115,14 @@ int GetRowsCountCSVansi(PCTSTR path)
 				// закрываем дескрипторы
 				CloseHandle(hFile);
 				CloseHandle(hEndRead);
-				delete[] notalign;
+				delete[] buf;
 				delete[] bufWork;
 				return strCount;
 			}
 			// решаем что делать с другими случаями ошибок
 			CloseHandle(hFile);
 			CloseHandle(hEndRead);
-			delete[] notalign;
+			delete[] buf;
 			delete[] bufWork;
 			return -1;
 			}// конец процедуры switch (dwError = GetLastError())
@@ -152,6 +143,10 @@ int GetRowCSVansi(PCTSTR path, int strNum)
 	OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу
 	const DWORD  nNumberOfBytesToRead = 16777216;//8388608;//читаем в буфер байты
 	char* buf = new char[nNumberOfBytesToRead]; //буфер CreateFile
+	//char* notalign = new char[nNumberOfBytesToRead + 1 + 512]; //память
+	//char* buf = notalign; //буфер
+	//if (size_t(buf) % 512) { buf += 512 - (size_t(buf) % 512); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора 
+
 	char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
 	bufWork[0] = '\0';//добавим нуль-терминатор
 	bufWork[nNumberOfBytesToRead] = '\0';//добавим нуль-терминатор
@@ -177,15 +172,15 @@ int GetRowCSVansi(PCTSTR path, int strNum)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED,  // | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
+		FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hEndRead);
-		delete[] bufWork;
 		delete[] buf;
+		delete[] bufWork;
 		return -1;
 	}
 	// читаем данные из файла
@@ -193,7 +188,7 @@ int GetRowCSVansi(PCTSTR path, int strNum)
 	{
 		DWORD  dwBytesRead;
 		DWORD  dwError;
-		char* find= buf; //буфер
+		find= buf; //буфер
 		// читаем одну запись
 		if (!ReadFile(
 			hFile,           // дескриптор файла
@@ -286,19 +281,22 @@ HANDLE  hFile;     // дескриптор файла
 HANDLE  hEndRead;  // дескриптор события
 OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу
 const DWORD  nNumberOfBytesToRead = 16777216;//8388608;//читаем в буфер байты
-char* buf = new char[nNumberOfBytesToRead]; //буфер CreateFile
-char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
+//char* buf = new char[nNumberOfBytesToRead]; //буфер CreateFile
+//char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
+	char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //память
+	char* buf = notAlignBuf; //буфер
+	if (size_t(buf) % 4096) { buf += 4096 - (size_t(buf) % 4096); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора/страницы 
+
+	char* notAlignBufBufWork = new char[nNumberOfBytesToRead + 4096 + 1]; //буфер Рабочий
+	char* bufWork = notAlignBufBufWork; //буфер
+	if (size_t(bufWork) % 4096) { bufWork += 4096 - (size_t(bufWork) % 4096); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора/страницы  
+
 bufWork[0] = '\0';//добавим нуль-терминатор
 bufWork[nNumberOfBytesToRead] = '\0';//добавим нуль-терминатор
 char* find;// указатель для поиска
-char* findNext;// указатель для поиска следующий
 int strCount = 1; //счетчик строк
 std::string strOut;
 DWORD  dwBytesReadWork;
-//bool goFind = true;
-//bool goBuf = false;
-//bool goBackBuf = false;
-//int BackCount = 0;
 int findStatus = 0;
 DWORD ignoreOffset=0;
 
@@ -318,15 +316,15 @@ hFile = CreateFile(
 	FILE_SHARE_READ,       // совместный доступ к файлу
 	NULL,                  // защиты нет
 	OPEN_EXISTING,         // открываем существующий файл
-	FILE_FLAG_OVERLAPPED,// | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
+	FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод//отключить системный буфер
 	NULL                   // шаблона нет
 );
 // проверяем на успешное открытие
 if (hFile == INVALID_HANDLE_VALUE)
 {
 	CloseHandle(hEndRead);
-	delete[] bufWork;
-	delete[] buf;
+	delete[] notAlignBuf;
+	delete[] notAlignBufBufWork;
 	return -1;
 }
 // читаем данные из файла
@@ -334,7 +332,7 @@ for (;;)
 {
 	DWORD  dwBytesRead;
 	DWORD  dwError;
-	char* find = buf; //буфер
+	find = buf; //буфер
 	// читаем одну запись
 	if (!ReadFile(
 		hFile,           // дескриптор файла
@@ -348,7 +346,9 @@ for (;;)
 		{
 			//эти ошибки смотрм после завершения асинхронной операции чтения, для возможности обработать рабочий буфер
 		case ERROR_IO_PENDING: { break; }		 // асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
-		case ERROR_HANDLE_EOF: { break; } // мы достигли конца файла читалкой ReadFile
+		case ERROR_HANDLE_EOF: { 
+			break; 
+		} // мы достигли конца файла читалкой ReadFile
 		default: {goto return1; }// другие ошибки
 		}
 	}
@@ -389,7 +389,7 @@ for (;;)
 							goto go_1;
 						}
 					}
-					else//если конец строки в следующих буферах или конец файла
+					else//если конец строки в следующем буфере или конец файла
 					{
 						strOut = strOut + std::string(strStart);
 						findStatus = 1;
@@ -398,7 +398,6 @@ for (;;)
 				else //если начало строки не найдено и это не первый буфер смотрим предыдущий буфер
 				{
 					findStatus = 2;
-					//ignoreOffset = ovl.Offset - nNumberOfBytesToRead;
 					ovl.Offset -= nNumberOfBytesToRead * 3;
 					ignoreOffset = ovl.Offset + nNumberOfBytesToRead;
 				}
@@ -422,7 +421,7 @@ for (;;)
 					goto go_1;
 				}
 			}
-			else//если конец строки в следующих буферах или конец файла
+			else//если конец строки в следующем буфере или конец файла
 			{
 				strOut = strOut + std::string(find);
 			}
@@ -443,7 +442,6 @@ for (;;)
 			}
 			else
 			{
-				//ignoreOffset = ovl.Offset - nNumberOfBytesToRead;
 				ovl.Offset -= nNumberOfBytesToRead * 3;//если начало строки не найдлено смотрим предыдущий буфер
 				ignoreOffset = ovl.Offset + nNumberOfBytesToRead;
 			}
@@ -462,7 +460,7 @@ for (;;)
 		{
 		case ERROR_HANDLE_EOF: 
 		{
-			if (findStatus != 2) goto return0; break;
+			if (findStatus != 2) goto return0; break;//если конец файла. но мы должны вернутся найти начало строки.
 		}// мы достигли конца файла в ходе асинхронной операции
 		default: {goto return1; }// другие ошибки
 		}// конец процедуры switch (dwError = GetLastError())
@@ -481,22 +479,22 @@ return0:
 std::cout << "String Find " << strOut << std::endl;
 CloseHandle(hFile);
 CloseHandle(hEndRead);
-delete[] buf;
-delete[] bufWork;
+delete[] notAlignBuf;
+delete[] notAlignBufBufWork;
 return 0;
 return1:
 CloseHandle(hFile);
 CloseHandle(hEndRead);
-delete[] buf;
-delete[] bufWork;
+delete[] notAlignBuf;
+delete[] notAlignBufBufWork;
 return -1;
 }
 
 
 int createfile() //создание файла для теста
 {
-	const int N = 4000000; // количество строк в файле
-	std::ofstream fout("D:\\CSV_1_GB.csv");
+	const int N = 40000000; // количество строк в файле
+	std::ofstream fout("D:\\CSV_10_GB.csv");
 	std::string str = "Пятый; Тридацть четвертый; 44221100; BBB; CIFRAPOLE; POLEPVTRETYE; ODIN ODIN - TRI; CC; 01.01.2013; 01.01.2013; 8963; 2UTY39ADVGKR; СU707039; 40200М У0026034; -; 11; 2; 150; 1998; 1; -; 21; 1980; 1490; НОМЕР ПЯТЬ; -; ПОЛЕ ОДИН; ПОЛЕ ОДИН ПЯТЬ; -; -";
 	if (!fout){	return 1; }
 
@@ -624,21 +622,50 @@ int main()
 
 
 	int x;
-	t1 = clock();
-	if ((x = FindInCSVansi(L"D:\\CSV_0_GB.csv","01",1)) > -1)
-	{
-		t2 = clock();
-		printf("HDD WDC WD10EACS-00ZJB0 (1000 GB, SATA-II): GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
-		//std::cout << "String Find " << x << std::endl;
-	}
 
 	t1 = clock();
-	if ((x = FindInCSVansi(L"C:\\CSV_1_GB.csv","4000000",0)) > -1)
+	if ((x = GetRowsCountCSVansi(L"C:\\CSV_1_GB.csv")) > -1)
 	{
 		t2 = clock();
 		printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+		std::cout << "String Find - " << x << std::endl;
+	}
+
+	t1 = clock();
+	if ((x = GetRowCSVansi(L"C:\\CSV_1_GB.csv", 4000000)) > -1)
+	{
+		t2 = clock();
+		printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): GetRowCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 		//std::cout << "String Find " << x << std::endl;
 	}
+
+
+	//t1 = clock();
+	//if ((x = FindInCSVansi(L"D:\\CSV_0_GB.csv","0",1)) > -1)
+	//{
+	//	t2 = clock();
+	//	printf("HDD WDC WD10EACS-00ZJB0 (1000 GB, SATA-II): GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	//	//std::cout << "String Find " << x << std::endl;
+	//}
+
+	//	t1 = clock();
+	//if ((x = FindInCSVansi(L"D:\\CSV_10_GB.csv","40000000",1)) > -1)
+	//{
+	//	t2 = clock();
+	//	printf("HDD WDC WD10EACS-00ZJB0 (1000 GB, SATA-II): FindInCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	//	//std::cout << "String Find " << x << std::endl;
+	//}
+
+	t1 = clock();
+	if ((x = FindInCSVansi(L"C:\\CSV_10_GB.csv","40000000",0)) > -1)
+	{
+		t2 = clock();
+		printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): FindInCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+		//std::cout << "String Find " << x << std::endl;
+	}
+
+
+
 	system("pause");
 	return 0;
 }
