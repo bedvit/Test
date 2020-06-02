@@ -19,13 +19,26 @@ int GetRowsCountCSVansi(PCTSTR path)
 	HANDLE  hFile;     // дескриптор файла
 	HANDLE  hEndRead;  // дескриптор события
 	OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу
+	DWORD  dwBytesReadWork=0;
 	const DWORD  nNumberOfBytesToRead = 16777216;//8388608;//читаем в буфер байты
-	char* buf = new char[nNumberOfBytesToRead]; //память
-	char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
+	bool ERR_HANDLE_EOF = false;
+	size_t i = 0;
+	//char* buf = new char[nNumberOfBytesToRead]; //память
+	//char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
+
+	char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //память
+	char* buf = notAlignBuf; //буфер
+	if (size_t(buf) % 4096) { buf += 4096 - (size_t(buf) % 4096); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора/страницы 
+
+	char* notAlignBufBufWork = new char[nNumberOfBytesToRead + 4096 + 1]; //буфер Рабочий
+	char* bufWork = notAlignBufBufWork; //буфер
+	if (size_t(bufWork) % 4096) { bufWork += 4096 - (size_t(bufWork) % 4096); }//адрес рабочего буфера тоже выровнял по размеру сектора/страницы  
+
+
 	bufWork[0] = '\0';//добавим нуль-терминатор
 	bufWork[nNumberOfBytesToRead] = '\0';//добавим нуль-терминатор
 	char* find;// указатель для поиска
-	int strCount = 1; //счетчик строк
+	size_t strCount = 1; //счетчик строк
 
 	// создаем события с автоматическим сбросом
 	hEndRead = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -36,6 +49,7 @@ int GetRowsCountCSVansi(PCTSTR path)
 	ovl.OffsetHigh = 0;      // старшая часть смещения равна 0
 	ovl.hEvent = hEndRead;   // событие для оповещения завершения чтения
 
+	i = sizeof(ovl.Offset);
 	// открываем файл для чтения
 	hFile = CreateFile(
 		path,   // имя файла
@@ -43,17 +57,18 @@ int GetRowsCountCSVansi(PCTSTR path)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод//отключаем системный буфер
+		FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING | FILE_FLAG_RANDOM_ACCESS,// ,// | FILE_FLAG_RANDOM_ACCESS,//FILE_FLAG_NO_BUFFERING,  // асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hEndRead);
-		delete[] buf;
-		delete[] bufWork;
+		delete[] notAlignBuf;
+		delete[] notAlignBufBufWork;
 		return -1;
 	}
+	//FlushFileBuffers(hFile); //Сбрасывает буферы указанного файла и вызывает запись всех буферизованных данных в файл.
 	// читаем данные из файла
 	for (;;)
 	{
@@ -77,18 +92,20 @@ int GetRowsCountCSVansi(PCTSTR path)
 				break;
 			case ERROR_HANDLE_EOF:
 				// мы достигли конца файла 
-				// закрываем дескрипторы
+				// закроем файл после обработки данных в рабочем буфере
+				ERR_HANDLE_EOF = true;
 				break;
 			default:
 				// закрываем дескрипторы
 				CloseHandle(hFile);
 				CloseHandle(hEndRead);
-				delete[] buf;
-				delete[] bufWork;
+				delete[] notAlignBuf;
+				delete[] notAlignBufBufWork;
 				return -1;
 			}
 		}
 		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
+		bufWork[dwBytesReadWork] = '\0';//добавим нуль-терминатор
 		find = bufWork; //буфер
 		find = strchr(find, '\n');
 		while (find != NULL)
@@ -96,34 +113,47 @@ int GetRowsCountCSVansi(PCTSTR path)
 			find = find + 1;
 			strCount++;
 			find = strchr(find, '\n');
+			
 		}
+		//i=strlen(bufWork);
+		//std::cout << i << std::endl;
 		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
-
-		// ждем, пока завершится асинхронная операция чтения
-		WaitForSingleObject(hEndRead, INFINITE);
-
 		// проверим результат работы асинхронного чтения 
+		if (ERR_HANDLE_EOF)
+		{
+			// мы достигли конца файла в ходе асинхронной операции	
+			// закрываем дескрипторы
+			CloseHandle(hFile);
+			CloseHandle(hEndRead);
+			delete[] notAlignBuf;
+			delete[] notAlignBufBufWork;
+			return strCount;
+		}
+		// ждем, пока завершится асинхронная операция чтения
+		WaitForSingleObject(hEndRead, 1000);// INFINITE);
+
 		// если возникла проблема ... 
 		if (!GetOverlappedResult(hFile, &ovl, &dwBytesRead, FALSE))
 		{
 			// решаем что делать с кодом ошибки
 			switch (dwError = GetLastError())
 			{
-			case ERROR_HANDLE_EOF:
+			case ERROR_HANDLE_EOF: 
 			{
 				// мы достигли конца файла в ходе асинхронной операции	
 				// закрываем дескрипторы
 				CloseHandle(hFile);
 				CloseHandle(hEndRead);
-				delete[] buf;
-				delete[] bufWork;
+				delete[] notAlignBuf;
+				delete[] notAlignBufBufWork;
 				return strCount;
 			}
 			// решаем что делать с другими случаями ошибок
+			default:
 			CloseHandle(hFile);
 			CloseHandle(hEndRead);
-			delete[] buf;
-			delete[] bufWork;
+			delete[] notAlignBuf;
+			delete[] notAlignBufBufWork;
 			return -1;
 			}// конец процедуры switch (dwError = GetLastError())
 		}
@@ -132,6 +162,7 @@ int GetRowsCountCSVansi(PCTSTR path)
 		memcpy(bufWork, buf, nNumberOfBytesToRead);
 
 		// увеличиваем смещение в файле
+		dwBytesReadWork = dwBytesRead;//кол-во считанных байт
 		ovl.Offset += nNumberOfBytesToRead;// sizeof(n);
 	}
 }
@@ -172,7 +203,7 @@ int GetRowCSVansi(PCTSTR path, int strNum)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
+		FILE_FLAG_OVERLAPPED,// | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
@@ -280,7 +311,7 @@ int FindInCSVansi(PCTSTR path, const char* findStr, bool multiLine)
 HANDLE  hFile;     // дескриптор файла
 HANDLE  hEndRead;  // дескриптор события
 OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу
-const DWORD  nNumberOfBytesToRead = 16777216;//8388608;//читаем в буфер байты
+const DWORD  nNumberOfBytesToRead = 33554432; //16777216;//8388608;//читаем в буфер байты
 //char* buf = new char[nNumberOfBytesToRead]; //буфер CreateFile
 //char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
 	char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //память
@@ -289,7 +320,7 @@ const DWORD  nNumberOfBytesToRead = 16777216;//8388608;//читаем в буф�
 
 	char* notAlignBufBufWork = new char[nNumberOfBytesToRead + 4096 + 1]; //буфер Рабочий
 	char* bufWork = notAlignBufBufWork; //буфер
-	if (size_t(bufWork) % 4096) { bufWork += 4096 - (size_t(bufWork) % 4096); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора/страницы  
+	if (size_t(bufWork) % 4096) { bufWork += 4096 - (size_t(bufWork) % 4096); }//адрес рабочего буфера тоже выровнял по размеру сектора/страницы  
 
 bufWork[0] = '\0';//добавим нуль-терминатор
 bufWork[nNumberOfBytesToRead] = '\0';//добавим нуль-терминатор
@@ -493,8 +524,8 @@ return -1;
 
 int createfile() //создание файла для теста
 {
-	const int N = 40000000; // количество строк в файле
-	std::ofstream fout("D:\\CSV_10_GB.csv");
+	const int N = 4000000; // количество строк в файле
+	std::ofstream fout("C:\\CSV_1_GB.csv");
 	std::string str = "Пятый; Тридацть четвертый; 44221100; BBB; CIFRAPOLE; POLEPVTRETYE; ODIN ODIN - TRI; CC; 01.01.2013; 01.01.2013; 8963; 2UTY39ADVGKR; СU707039; 40200М У0026034; -; 11; 2; 150; 1998; 1; -; 21; 1980; 1490; НОМЕР ПЯТЬ; -; ПОЛЕ ОДИН; ПОЛЕ ОДИН ПЯТЬ; -; -";
 	if (!fout){	return 1; }
 
@@ -512,6 +543,7 @@ int main()
 	//if (createfile() != 0) { return 1; }; //генератор данных в файле
 	clock_t t1;
 	clock_t t2;
+	int x;
 
 //	///////////////////////////////////////////////
 	//t1 = clock();
@@ -610,7 +642,7 @@ int main()
 	//	printf("HDD WDC WD10EACS-00ZJB0 (1000 GB, SATA-II): GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 	//	std::cout << "String Find " << x << std::endl;
 	//}
-
+//
 	//t1 = clock();
 	//if ((x = GetRowsCountCSVansi(L"C:\\CSV_1_GB.csv")) > -1)
 	//{
@@ -618,26 +650,22 @@ int main()
 	//	printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 	//	std::cout << "String Find " << x << std::endl;
 	//}
-
-
-
-	int x;
-
-	t1 = clock();
-	if ((x = GetRowsCountCSVansi(L"C:\\CSV_1_GB.csv")) > -1)
-	{
-		t2 = clock();
-		printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
-		std::cout << "String Find - " << x << std::endl;
-	}
-
-	t1 = clock();
-	if ((x = GetRowCSVansi(L"C:\\CSV_1_GB.csv", 4000000)) > -1)
-	{
-		t2 = clock();
-		printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): GetRowCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
-		//std::cout << "String Find " << x << std::endl;
-	}
+//
+	//t1 = clock();
+	//if ((x = GetRowsCountCSVansi(L"C:\\CSV_1_GB.csv")) > -1)
+	//{
+	//	t2 = clock();
+	//	printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	//	std::cout << "String Find - " << x << std::endl;
+	//}
+//
+	//t1 = clock();
+	//if ((x = GetRowCSVansi(L"C:\\CSV_1_GB.csv", 4000000)) > -1)
+	//{
+	//	t2 = clock();
+	//	printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): GetRowCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	//	//std::cout << "String Find " << x << std::endl;
+	//}
 
 
 	//t1 = clock();
@@ -656,14 +684,24 @@ int main()
 	//	//std::cout << "String Find " << x << std::endl;
 	//}
 
-	t1 = clock();
-	if ((x = FindInCSVansi(L"C:\\CSV_10_GB.csv","40000000",0)) > -1)
-	{
-		t2 = clock();
-		printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): FindInCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
-		//std::cout << "String Find " << x << std::endl;
-	}
+	//t1 = clock();
+	//if ((x = FindInCSVansi(L"C:\\CSV_10_GB.csv","40000000",0)) > -1)
+	//{
+	//	t2 = clock();
+	//	printf("SSD KINGSTON SV300S37A120G (120 GB, SATA-III): FindInCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	//	//std::cout << "String Find " << x << std::endl;
+	//}
 
+
+
+
+t1 = clock();
+if ((x = GetRowsCountCSVansi(L"C:\\CSV_10_GB.csv")) > -1)
+{
+	t2 = clock();
+	printf("HDD 500 GB, 7200 RPM, SATA - III: FindInCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	std::cout << "String Find " << x << std::endl;
+}
 
 
 	system("pause");
