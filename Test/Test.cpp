@@ -4,52 +4,47 @@
 #include "stdafx.h"
 #include <fstream>
 #include <string>
-
 #include <iostream>
-#include <fstream>
 #include <cstdlib> // для использования exit()
 #include <ctime>
 #include <Windows.h>
 
-//#include <iostream>
-//#include <exception>
-//#include <stdio.h>
-int GetRowsCountCSVansi(PCTSTR path)
+int GetRowsCountCSVansi(PCTSTR path, bool NO_BUFFERING)
 {
 	HANDLE  hFile;     // дескриптор файла
 	HANDLE  hEndRead;  // дескриптор события
-	OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу
 	DWORD  dwBytesReadWork=0;
 	const DWORD  nNumberOfBytesToRead = 16777216;//8388608;//читаем в буфер байты
-	bool ERR_HANDLE_EOF = false;
-	size_t i = 0;
+	//size_t i = 0;
 	//char* buf = new char[nNumberOfBytesToRead]; //память
 	//char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
 
-	char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //память
+	char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //буфер
 	char* buf = notAlignBuf; //буфер
 	if (size_t(buf) % 4096) { buf += 4096 - (size_t(buf) % 4096); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора/страницы 
 
 	char* notAlignBufBufWork = new char[nNumberOfBytesToRead + 4096 + 1]; //буфер Рабочий
 	char* bufWork = notAlignBufBufWork; //буфер
 	if (size_t(bufWork) % 4096) { bufWork += 4096 - (size_t(bufWork) % 4096); }//адрес рабочего буфера тоже выровнял по размеру сектора/страницы  
-
-
+	
 	bufWork[0] = '\0';//добавим нуль-терминатор
 	bufWork[nNumberOfBytesToRead] = '\0';//добавим нуль-терминатор
 	char* find;// указатель для поиска
 	size_t strCount = 1; //счетчик строк
+	bool ERR_HANDLE_EOF = false;
 
 	// создаем события с автоматическим сбросом
 	hEndRead = CreateEvent(NULL, FALSE, FALSE, NULL);
 	if (hEndRead == NULL) { return GetLastError(); }
 
-	// инициализируем структуру OVERLAPPED
+	_ULARGE_INTEGER ui; //Представляет 64-разрядное целое число без знака обединяя два 32-х разрядных
+	ui.QuadPart = 0;
+	
+	OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу// инициализируем структуру OVERLAPPED
 	ovl.Offset = 0;         // младшая часть смещения равна 0
 	ovl.OffsetHigh = 0;      // старшая часть смещения равна 0
 	ovl.hEvent = hEndRead;   // событие для оповещения завершения чтения
 
-	i = sizeof(ovl.Offset);
 	// открываем файл для чтения
 	hFile = CreateFile(
 		path,   // имя файла
@@ -57,7 +52,7 @@ int GetRowsCountCSVansi(PCTSTR path)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING | FILE_FLAG_RANDOM_ACCESS,// ,// | FILE_FLAG_RANDOM_ACCESS,//FILE_FLAG_NO_BUFFERING,  // асинхронный ввод//отключаем системный буфер
+		FILE_FLAG_OVERLAPPED | (NO_BUFFERING ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
@@ -113,12 +108,7 @@ int GetRowsCountCSVansi(PCTSTR path)
 			find = find + 1;
 			strCount++;
 			find = strchr(find, '\n');
-			
 		}
-		//i=strlen(bufWork);
-		//std::cout << i << std::endl;
-		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
-		// проверим результат работы асинхронного чтения 
 		if (ERR_HANDLE_EOF)
 		{
 			// мы достигли конца файла в ходе асинхронной операции	
@@ -129,7 +119,8 @@ int GetRowsCountCSVansi(PCTSTR path)
 			delete[] notAlignBufBufWork;
 			return strCount;
 		}
-		// ждем, пока завершится асинхронная операция чтения
+		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
+		// ждем, пока завершится асинхронная операция чтения// проверим результат работы асинхронного чтения 
 		WaitForSingleObject(hEndRead, 1000);// INFINITE);
 
 		// если возникла проблема ... 
@@ -163,22 +154,26 @@ int GetRowsCountCSVansi(PCTSTR path)
 
 		// увеличиваем смещение в файле
 		dwBytesReadWork = dwBytesRead;//кол-во считанных байт
-		ovl.Offset += nNumberOfBytesToRead;// sizeof(n);
+		ui.QuadPart += nNumberOfBytesToRead; //добавляем смещение к указателю на файл
+		ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
+		ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
 	}
 }
 
-int GetRowCSVansi(PCTSTR path, int strNum)
+int GetRowCSVansi(PCTSTR path, int strNum, bool NO_BUFFERING)
 {
 	HANDLE  hFile;     // дескриптор файла
 	HANDLE  hEndRead;  // дескриптор события
-	OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу
 	const DWORD  nNumberOfBytesToRead = 16777216;//8388608;//читаем в буфер байты
-	char* buf = new char[nNumberOfBytesToRead]; //буфер CreateFile
-	//char* notalign = new char[nNumberOfBytesToRead + 1 + 512]; //память
-	//char* buf = notalign; //буфер
-	//if (size_t(buf) % 512) { buf += 512 - (size_t(buf) % 512); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора 
 
-	char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
+	char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //буфер
+	char* buf = notAlignBuf; //буфер
+	if (size_t(buf) % 4096) { buf += 4096 - (size_t(buf) % 4096); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора/страницы 
+
+	char* notAlignBufBufWork = new char[nNumberOfBytesToRead + 4096 + 1]; //буфер Рабочий
+	char* bufWork = notAlignBufBufWork; //буфер
+	if (size_t(bufWork) % 4096) { bufWork += 4096 - (size_t(bufWork) % 4096); }//адрес рабочего буфера тоже выровнял по размеру сектора/страницы  
+
 	bufWork[0] = '\0';//добавим нуль-терминатор
 	bufWork[nNumberOfBytesToRead] = '\0';//добавим нуль-терминатор
 	char* find;// указатель для поиска
@@ -186,11 +181,16 @@ int GetRowCSVansi(PCTSTR path, int strNum)
 	int strCount=1; //счетчик строк
 	std::string strOut;
 	DWORD  dwBytesReadWork;
+	bool ERR_HANDLE_EOF = false;
 
 	// создаем события с автоматическим сбросом
 	hEndRead = CreateEvent(NULL, FALSE, FALSE, NULL);
 	if (hEndRead == NULL) { return GetLastError(); }
 
+	_ULARGE_INTEGER ui; //Представляет 64-разрядное целое число без знака обединяя два 32-х разрядных
+	ui.QuadPart = 0;
+
+	OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу
 	// инициализируем структуру OVERLAPPED
 	ovl.Offset = 0;         // младшая часть смещения равна 0
 	ovl.OffsetHigh = 0;      // старшая часть смещения равна 0
@@ -203,15 +203,15 @@ int GetRowCSVansi(PCTSTR path, int strNum)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED,// | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод
+		FILE_FLAG_OVERLAPPED | (NO_BUFFERING ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hEndRead);
-		delete[] buf;
-		delete[] bufWork;
+		delete[] notAlignBuf;
+		delete[] notAlignBufBufWork;
 		return -1;
 	}
 	// читаем данные из файла
@@ -233,12 +233,12 @@ int GetRowCSVansi(PCTSTR path, int strNum)
 			{
 			//эти ошибки смотрм после завершения асинхронной операции чтения, для возможности обработать рабочий буфер
 			case ERROR_IO_PENDING: { break; }		 // асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
-			case ERROR_HANDLE_EOF: {break; } // мы достигли конца файла читалкой ReadFile
+			case ERROR_HANDLE_EOF: {ERR_HANDLE_EOF = true; break; } // мы достигли конца файла читалкой ReadFile
 			default: {goto return1; }// другие ошибки
 			}
 		}
 		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
-		if (ovl.Offset > 0)//если рабочий буфер заполнен
+		if (ui.QuadPart > 0)//если рабочий буфер заполнен
 		{
 			bufWork[dwBytesReadWork] = '\0';//добавим нуль-терминатор
 			find = bufWork; //новый буфер
@@ -267,6 +267,7 @@ int GetRowCSVansi(PCTSTR path, int strNum)
 			} while (find != NULL);
 
 		}
+		if (ERR_HANDLE_EOF){ goto return0; }
 		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
 
 		// ждем, пока завершится асинхронная операция чтения
@@ -286,8 +287,10 @@ int GetRowCSVansi(PCTSTR path, int strNum)
 		memcpy(bufWork, buf, nNumberOfBytesToRead);
 
 		// увеличиваем смещение в файле
-		dwBytesReadWork = dwBytesRead;
-		ovl.Offset += nNumberOfBytesToRead;// sizeof(n);
+		dwBytesReadWork = dwBytesRead;//кол-во считанных байт
+		ui.QuadPart += nNumberOfBytesToRead; //добавляем смещение к указателю на файл
+		ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
+		ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
 	}
 
 return0:
@@ -295,47 +298,48 @@ return0:
 	std::cout << "String Find " << strOut << std::endl;
 	CloseHandle(hFile);
 	CloseHandle(hEndRead);
-	delete[] buf;
-	delete[] bufWork;
+	delete[] notAlignBuf;
+	delete[] notAlignBufBufWork;
 	return 0;
 return1:
 	CloseHandle(hFile);
 	CloseHandle(hEndRead);
-	delete[] buf;
-	delete[] bufWork;
+	delete[] notAlignBuf;
+	delete[] notAlignBufBufWork;
 	return -1;
 }
 
-int FindInCSVansi(PCTSTR path, const char* findStr, bool multiLine)
+int FindInCSVansi(PCTSTR path, const char* findStr, bool multiLine, bool NO_BUFFERING)
 {
 HANDLE  hFile;     // дескриптор файла
 HANDLE  hEndRead;  // дескриптор события
-OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу
 const DWORD  nNumberOfBytesToRead = 33554432; //16777216;//8388608;//читаем в буфер байты
-//char* buf = new char[nNumberOfBytesToRead]; //буфер CreateFile
-//char* bufWork = new char[nNumberOfBytesToRead + 1]; //буфер Рабочий
-	char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //память
-	char* buf = notAlignBuf; //буфер
-	if (size_t(buf) % 4096) { buf += 4096 - (size_t(buf) % 4096); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора/страницы 
+char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //буфер
+char* buf = notAlignBuf; //буфер
+if (size_t(buf) % 4096) { buf += 4096 - (size_t(buf) % 4096); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора/страницы 
 
-	char* notAlignBufBufWork = new char[nNumberOfBytesToRead + 4096 + 1]; //буфер Рабочий
-	char* bufWork = notAlignBufBufWork; //буфер
-	if (size_t(bufWork) % 4096) { bufWork += 4096 - (size_t(bufWork) % 4096); }//адрес рабочего буфера тоже выровнял по размеру сектора/страницы  
+char* notAlignBufBufWork = new char[nNumberOfBytesToRead + 4096 + 1]; //буфер Рабочий
+char* bufWork = notAlignBufBufWork; //буфер
+if (size_t(bufWork) % 4096) { bufWork += 4096 - (size_t(bufWork) % 4096); }//адрес рабочего буфера тоже выровнял по размеру сектора/страницы  
 
 bufWork[0] = '\0';//добавим нуль-терминатор
 bufWork[nNumberOfBytesToRead] = '\0';//добавим нуль-терминатор
 char* find;// указатель для поиска
-int strCount = 1; //счетчик строк
+size_t strCount = 1; //счетчик строк
 std::string strOut;
 DWORD  dwBytesReadWork;
-int findStatus = 0;
+DWORD findStatus = 0;
 DWORD ignoreOffset=0;
+bool ERR_HANDLE_EOF = false;
 
 // создаем события с автоматическим сбросом
 hEndRead = CreateEvent(NULL, FALSE, FALSE, NULL);
 if (hEndRead == NULL) { return GetLastError(); }
 
-// инициализируем структуру OVERLAPPED
+_ULARGE_INTEGER ui; //Представляет 64-разрядное целое число без знака обединяя два 32-х разрядных
+ui.QuadPart = 0;
+
+OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу// инициализируем структуру OVERLAPPED
 ovl.Offset = 0;         // младшая часть смещения равна 0
 ovl.OffsetHigh = 0;      // старшая часть смещения равна 0
 ovl.hEvent = hEndRead;   // событие для оповещения завершения чтения
@@ -347,7 +351,7 @@ hFile = CreateFile(
 	FILE_SHARE_READ,       // совместный доступ к файлу
 	NULL,                  // защиты нет
 	OPEN_EXISTING,         // открываем существующий файл
-	FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,  // асинхронный ввод//отключить системный буфер
+	FILE_FLAG_OVERLAPPED | (NO_BUFFERING ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 	NULL                   // шаблона нет
 );
 // проверяем на успешное открытие
@@ -377,14 +381,12 @@ for (;;)
 		{
 			//эти ошибки смотрм после завершения асинхронной операции чтения, для возможности обработать рабочий буфер
 		case ERROR_IO_PENDING: { break; }		 // асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
-		case ERROR_HANDLE_EOF: { 
-			break; 
-		} // мы достигли конца файла читалкой ReadFile
+		case ERROR_HANDLE_EOF: { ERR_HANDLE_EOF = true;	break; } // мы достигли конца файла читалкой ReadFile
 		default: {goto return1; }// другие ошибки
 		}
 	}
 	//работаем асинхронно, выполняем код, пока ждем чтение с диска//
-	if (ovl.Offset!=ignoreOffset)//игнорируем первую итерацию и этерации прошедшие следующим буфером, когда нужно было вернутся в предыдущий буфер
+	if (ui.QuadPart != ignoreOffset)//игнорируем первую итерацию и этерации прошедшие следующим буфером, когда нужно было вернутся в предыдущий буфер
 	{
 		bufWork[dwBytesReadWork] = '\0';//добавим нуль-терминатор
 		find = bufWork; //новый буфер
@@ -403,7 +405,7 @@ for (;;)
 					if (*strStart == '\n') { break; } //если нашли начало строки
 				}
 				strStart++;
-				if (ovl.Offset == nNumberOfBytesToRead || strStart != bufWork)//если первый буфер или найдено начало строки
+				if (ui.QuadPart == nNumberOfBytesToRead || strStart != bufWork)//если первый буфер или найдено начало строки
 				{
 					strEnd = strchr(find, '\n');
 					if (strEnd != NULL) //если нашли конец строки
@@ -429,8 +431,8 @@ for (;;)
 				else //если начало строки не найдено и это не первый буфер смотрим предыдущий буфер
 				{
 					findStatus = 2;
-					ovl.Offset -= nNumberOfBytesToRead * 3;
-					ignoreOffset = ovl.Offset + nNumberOfBytesToRead;
+					ui.QuadPart -= nNumberOfBytesToRead * 3;
+					ignoreOffset = ui.QuadPart + nNumberOfBytesToRead;
 				}
 			} //если нужная подстрока найдена
 		}
@@ -465,7 +467,7 @@ for (;;)
 				if (*strStart == '\n') { break; }//если нашли начало строки
 			}
 			strStart++;
-			if (ovl.Offset == nNumberOfBytesToRead || strStart != bufWork)//если первый буфер или найдено начало строки
+			if (ui.QuadPart == nNumberOfBytesToRead || strStart != bufWork)//если первый буфер или найдено начало строки
 			{
 				find = strStart++;
 				findStatus = 1;
@@ -473,12 +475,13 @@ for (;;)
 			}
 			else
 			{
-				ovl.Offset -= nNumberOfBytesToRead * 3;//если начало строки не найдлено смотрим предыдущий буфер
-				ignoreOffset = ovl.Offset + nNumberOfBytesToRead;
+				ui.QuadPart -= nNumberOfBytesToRead * 3;//если начало строки не найдлено смотрим предыдущий буфер
+				ignoreOffset = ui.QuadPart + nNumberOfBytesToRead;
 			}
 
 		}
 	}
+	if (ERR_HANDLE_EOF) { if (findStatus != 2) goto return0; }
 	//работаем асинхронно, выполняем код, пока ждем чтение с диска//
 
 	// ждем, пока завершится асинхронная операция чтения
@@ -501,8 +504,10 @@ for (;;)
 	memcpy(bufWork, buf, nNumberOfBytesToRead);
 
 	// увеличиваем смещение в файле
-	dwBytesReadWork = dwBytesRead;
-	ovl.Offset += nNumberOfBytesToRead;// sizeof(n);
+	dwBytesReadWork = dwBytesRead;//кол-во считанных байт
+	ui.QuadPart += nNumberOfBytesToRead; //добавляем смещение к указателю на файл
+	ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
+	ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
 }
 
 return0:
@@ -696,14 +701,29 @@ int main()
 
 
 t1 = clock();
-if ((x = GetRowsCountCSVansi(L"C:\\CSV_10_GB.csv")) > -1)
+if ((x = GetRowsCountCSVansi(L"C:\\CSV_10_GB.csv",1)) > -1)
 {
 	t2 = clock();
-	printf("HDD 500 GB, 7200 RPM, SATA - III: FindInCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	printf("SSD K120 GB, SATA-III: GetRowsCountCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 	std::cout << "String Find " << x << std::endl;
 }
 
 
+t1 = clock();
+if ((x = GetRowCSVansi(L"C:\\CSV_10_GB.csv",40000000, 1)) > -1)
+{
+	t2 = clock();
+	printf("SSD K120 GB, SATA-III: GetRowCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	std::cout << "String Find " << x << std::endl;
+}
+
+t1 = clock();
+if ((x = FindInCSVansi(L"C:\\CSV_10_GB.csv", "40000000", 1,1)) > -1)
+{
+	t2 = clock();
+	printf("SSD K120 GB, SATA-III: FindInCSVansi: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	std::cout << "String Find " << x << std::endl;
+}
 	system("pause");
 	return 0;
 }
