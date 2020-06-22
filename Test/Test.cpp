@@ -11,6 +11,7 @@
 #include <vector>
 #include <exception>
 #include <stdio.h>
+//#include <limits.h>
 
 
 
@@ -598,10 +599,87 @@ std::string XLAT(std::string s)
 	return sOut;
 }
 
-std::string FindRowsInCSVansiNew(PCTSTR path, const char* findStr, bool multiLine, bool noBuffering)
+
+
+#define XSIZE 500
+#define ASIZE 1
+
+void preBmBc(char *x, int m, int bmBc[]) {
+	int i;
+
+	for (i = 0; i < ASIZE; ++i)
+		bmBc[i] = m;
+	for (i = 0; i < m - 1; ++i)
+		bmBc[x[i]] = m - i - 1;
+}
+
+
+void suffixes(char *x, int m, int *suff) {
+	int f, g, i;
+
+	suff[m - 1] = m;
+	g = m - 1;
+	for (i = m - 2; i >= 0; --i) {
+		if (i > g && suff[i + m - 1 - f] < i - g)
+			suff[i] = suff[i + m - 1 - f];
+		else {
+			if (i < g)
+				g = i;
+			f = i;
+			while (g >= 0 && x[g] == x[g + m - 1 - f])
+				--g;
+			suff[i] = f - g;
+		}
+	}
+}
+
+void preBmGs(char *x, int m, int bmGs[]) {
+	int i, j, suff[XSIZE];
+
+	suffixes(x, m, suff);
+
+	for (i = 0; i < m; ++i)
+		bmGs[i] = m;
+	j = 0;
+	for (i = m - 1; i >= 0; --i)
+		if (suff[i] == i + 1)
+			for (; j < m - 1 - i; ++j)
+				if (bmGs[j] == m)
+					bmGs[j] = m - 1 - i;
+	for (i = 0; i <= m - 2; ++i)
+		bmGs[m - 1 - suff[i]] = m - 1 - i;
+}
+
+
+int BM(char *x, int m, char *y, int n) {
+	int i, j, bmGs[XSIZE], bmBc[ASIZE];
+
+	/* Preprocessing */
+	preBmGs(x, m, bmGs);
+	preBmBc(x, m, bmBc);
+
+	/* Searching */
+	j = 0;
+	while (j <= n - m) {
+		for (i = m - 1; i >= 0 && x[i] == y[i + j]; --i);
+		if (i < 0) {
+			return j;
+			j += bmGs[0];
+		}
+		else
+			j += max(bmGs[i], bmBc[y[i + j]] - m + 1 + i);
+	}
+	return j;
+}
+
+
+
+
+std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, bool noBuffering)
 {
-	const DWORD  nNumberOfBytesToRead = 16777216;//67108864;//33554432; //16777216;//8388608;//читаем в буфер байты
-	if (strlen(findStr) >= nNumberOfBytesToRead) { return ""; }; 
+	const DWORD  nNumberOfBytesToRead = 20;// 16777216;//67108864;//33554432; //16777216;//8388608;//читаем в буфер байты
+	size_t findStrLen = strlen(findStr);
+	if (findStrLen >= nNumberOfBytesToRead) { return ""; }; 
 	char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //буфер
 	char* buf = notAlignBuf; //буфер
 	if (size_t(buf) % 4096) { buf += 4096 - (size_t(buf) % 4096); }//адрес принимающего буфера тоже должен быть выровнен по размеру сектора/страницы 
@@ -614,7 +692,7 @@ std::string FindRowsInCSVansiNew(PCTSTR path, const char* findStr, bool multiLin
 	bufWork[nNumberOfBytesToRead] = '\0';//добавим нуль-терминатор
 	char* find;// указатель для поиска
 	size_t strCount = 1; //счетчик строк
-	size_t findStrLen = strlen(findStr);
+	
 	std::string strOut; //итоговая строка
 	DWORD dwBytesReadWork=0;
 	DWORD findStatus = 0; //статус поиска
@@ -683,11 +761,20 @@ std::string FindRowsInCSVansiNew(PCTSTR path, const char* findStr, bool multiLin
 
 		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
 		bufWork[dwBytesReadWork] = '\0';//добавим нуль-терминатор
-	go_1:
+	goNextFind:
 		if (findStatus == 0)//goFind
 		{
-			find = strstr(bufWorkNew, findStr);
-			//find = NULL;
+			//find = strstr(bufWorkNew, findStr);
+			//int x = seek_substring_KMP(bufWorkNew, findStr);
+
+			//find = memmem_boyermoore(bufWorkNew, dwBytesReadWork + strStartLen+1, findStr, 128);
+			int x = BM(bufWorkNew, dwBytesReadWork + strStartLen , findStr, findStrLen);
+			//search
+			//char a[] = "asdfghjkl";
+			//char b[] = "ghjkl";
+			//char* find2 = memmem_boyermoore(a, 10, b, 6);
+
+			find = NULL;
 			if (find != NULL) //если нужная подстрока найдена
 			{
 				for (strStart = find; strStart >= bufWorkNew; strStart--)
@@ -708,7 +795,7 @@ std::string FindRowsInCSVansiNew(PCTSTR path, const char* findStr, bool multiLin
 					{
 						bufWorkNew = strEnd++;
 						findStatus = 0;
-						goto go_1;
+						goto goNextFind;
 					}
 				}
 				else//если конец строки в следующем буфере или конец файла
@@ -734,7 +821,7 @@ std::string FindRowsInCSVansiNew(PCTSTR path, const char* findStr, bool multiLin
 				{
 					bufWorkNew = strEnd++;
 					findStatus = 0;
-					goto go_1;
+					goto goNextFind;
 				}
 			}
 			else//если конец строки в следующем буфере или конец файла
@@ -797,7 +884,6 @@ return1:
 	return "";
 }
 
-
 int main() 
 {
 	//0.53
@@ -828,6 +914,9 @@ int main()
 	clock_t t1;
 	clock_t t2;
 	//int x;
+	//std::string st ("4000000");
+	//char str[10];
+	char str[] = "1";
 
 	//for (int i = 1; i <= 4000000; i++)
 	//{
@@ -843,15 +932,15 @@ int main()
 	std::cout << "\n\FILE_FLAG_NO_BUFFERING\n" << std::endl;
 	for (int i = 1; i <= 5; i++)
 	{
-		t1 = clock();
-		sOut = FindRowsInCSVansiNew(L"C:\\CSV_1_GB.csv", "4000000", 0, 1);
-		t2 = clock();
-		printf("bedvit1: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+		//t1 = clock();
+		//sOut = FindRowsInCSVansiNew(L"C:\\CSV_1_GB.csv", "4000000", 0, 1);
+		//t2 = clock();
+		//printf("bedvit1: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 
-		t1 = clock();
-		sOut = FindRowsInCSVansiNew(L"C:\\CSV_1_GB.csv", "4000000", 0, 0);
-		t2 = clock();
-		printf("bedvit0: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+		//t1 = clock();
+		//sOut = FindRowsInCSVansiNew(L"C:\\CSV_1_GB.csv", "4000000", 0, 0);
+		//t2 = clock();
+		//printf("bedvit0: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 
 		//t1 = clock();
 		//sOut2 = XLAT("4000000");
@@ -864,7 +953,7 @@ int main()
 	for (int i = 1; i <= 5; i++)
 	{
 		t1 = clock();
-		sOut = FindRowsInCSVansiNew(L"C:\\CSV_1_GB.csv", "4000000", 0, 0);
+		sOut = FindRowsInCSVansiNew(L"C:\\CSV_1_GB.csv", str, 0, 0);
 		t2 = clock();
 		printf("bedvit1: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 
