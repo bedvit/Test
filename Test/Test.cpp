@@ -601,10 +601,81 @@ std::string XLAT(std::string s)
 
 
 
-#define XSIZE 500
-#define ASIZE 1
+#define XSIZE 7
+#define ASIZE 256
 
-void preBmBc(char *x, int m, int bmBc[]) {
+//void preBmBc(char *x, int m, int bmBc[]) {
+//	int i;
+//
+//	for (i = 0; i < ASIZE; ++i)
+//		bmBc[i] = m;
+//	for (i = 0; i < m - 1; ++i)
+//		bmBc[x[i]] = m - i - 1;
+//}
+//
+//
+//void suffixes(char *x, int m, int *suff) {
+//	int f, g, i;
+//
+//	suff[m - 1] = m;
+//	g = m - 1;
+//	for (i = m - 2; i >= 0; --i) {
+//		if (i > g && suff[i + m - 1 - f] < i - g)
+//			suff[i] = suff[i + m - 1 - f];
+//		else {
+//			if (i < g)
+//				g = i;
+//			f = i;
+//			while (g >= 0 && x[g] == x[g + m - 1 - f])
+//				--g;
+//			suff[i] = f - g;
+//		}
+//	}
+//}
+//
+//void preBmGs(char *x, int m, int bmGs[]) {
+//	int i, j, suff[XSIZE];
+//
+//	suffixes(x, m, suff);
+//
+//	for (i = 0; i < m; ++i)
+//		bmGs[i] = m;
+//	j = 0;
+//	for (i = m - 1; i >= 0; --i)
+//		if (suff[i] == i + 1)
+//			for (; j < m - 1 - i; ++j)
+//				if (bmGs[j] == m)
+//					bmGs[j] = m - 1 - i;
+//	for (i = 0; i <= m - 2; ++i)
+//		bmGs[m - 1 - suff[i]] = m - 1 - i;
+//}
+//
+//
+//int BM(char *x, int m, char *y, int n) {
+//	int i, j, bmGs[XSIZE], bmBc[ASIZE];
+//
+//	/* Preprocessing */
+//	preBmGs(x, m, bmGs);
+//	preBmBc(x, m, bmBc);
+//
+//	/* Searching */
+//	j = 0;
+//	while (j <= n - m) {
+//		for (i = m - 1; i >= 0 && x[i] == y[i + j]; --i);
+//		if (i < 0) {
+//			return j;
+//			j += bmGs[0];
+//		}
+//		else
+//			j += max(bmGs[i], bmBc[y[i + j]] - m + 1 + i);
+//	}
+//	return j;
+//}
+//
+
+
+
+void preBmBc(unsigned char *x, int m, int bmBc[]) {
 	int i;
 
 	for (i = 0; i < ASIZE; ++i)
@@ -614,7 +685,7 @@ void preBmBc(char *x, int m, int bmBc[]) {
 }
 
 
-void suffixes(char *x, int m, int *suff) {
+void suffixes(unsigned char *x, int m, int *suff) {
 	int f, g, i;
 
 	suff[m - 1] = m;
@@ -633,7 +704,7 @@ void suffixes(char *x, int m, int *suff) {
 	}
 }
 
-void preBmGs(char *x, int m, int bmGs[]) {
+void preBmGs(unsigned char *x, int m, int bmGs[]) {
 	int i, j, suff[XSIZE];
 
 	suffixes(x, m, suff);
@@ -651,33 +722,30 @@ void preBmGs(char *x, int m, int bmGs[]) {
 }
 
 
-int BM(char *x, int m, char *y, int n) {
+int BM(unsigned char *x, int m, unsigned char *y, int n) {
 	int i, j, bmGs[XSIZE], bmBc[ASIZE];
-
 	/* Preprocessing */
 	preBmGs(x, m, bmGs);
 	preBmBc(x, m, bmBc);
-
-	/* Searching */
 	j = 0;
 	while (j <= n - m) {
 		for (i = m - 1; i >= 0 && x[i] == y[i + j]; --i);
 		if (i < 0) {
+			//printf("%d\n", j);
 			return j;
-			j += bmGs[0];
+			//j += bmGs[0];
 		}
 		else
 			j += max(bmGs[i], bmBc[y[i + j]] - m + 1 + i);
 	}
-	return j;
+	return -1;
 }
-
 
 
 
 std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, bool noBuffering)
 {
-	const DWORD  nNumberOfBytesToRead = 20;// 16777216;//67108864;//33554432; //16777216;//8388608;//читаем в буфер байты
+	const DWORD  nNumberOfBytesToRead = 16777216;//67108864;//33554432; //16777216;//8388608;//читаем в буфер байты
 	size_t findStrLen = strlen(findStr);
 	if (findStrLen >= nNumberOfBytesToRead) { return ""; }; 
 	char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //буфер
@@ -736,6 +804,17 @@ std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, boo
 		return "";
 	}
 	// читаем данные из файла
+	unsigned char* findStrA = reinterpret_cast<unsigned char*>(findStr);
+	unsigned char* bufWorkNewA = reinterpret_cast<unsigned char*>(bufWorkNew);
+	////int x = BM(findStrA, findStrLen, bufWorkNewA, dwBytesReadWork + strStartLen);
+
+	unsigned char *x = findStrA;
+	int m = findStrLen;
+	int i, j, bmGs[XSIZE], bmBc[ASIZE];
+	/* Preprocessing */
+	preBmGs(x, m, bmGs);
+	preBmBc(x, m, bmBc);
+
 	for (;;)
 	{
 		DWORD  dwBytesRead;
@@ -766,13 +845,38 @@ std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, boo
 		{
 			//find = strstr(bufWorkNew, findStr);
 			//int x = seek_substring_KMP(bufWorkNew, findStr);
-
 			//find = memmem_boyermoore(bufWorkNew, dwBytesReadWork + strStartLen+1, findStr, 128);
-			int x = BM(bufWorkNew, dwBytesReadWork + strStartLen , findStr, findStrLen);
-			//search
-			//char a[] = "asdfghjkl";
-			//char b[] = "ghjkl";
+
+
+			//unsigned char* findStrA = reinterpret_cast<unsigned char*>(findStr);
+			//unsigned char* bufWorkNewA = reinterpret_cast<unsigned char*>(bufWorkNew);
+			//////int x = BM(findStrA, findStrLen, bufWorkNewA, dwBytesReadWork + strStartLen);
+
+			//unsigned char *x = findStrA;
+			//int m = findStrLen;
+			unsigned char *y = bufWorkNewA;
+			int n = dwBytesReadWork + strStartLen;
+			//int i, j, bmGs[XSIZE], bmBc[ASIZE];
+			///* Preprocessing */
+			////preBmGs(x, m, bmGs);
+			////preBmBc(x, m, bmBc);
+			j = 0;
+			while (j <= n - m) {
+				for (i = m - 1; i >= 0 && x[i] == y[i + j]; --i);
+				if (i < 0) {
+					//printf("%d\n", j);
+					goto goto1;
+					//j += bmGs[0];
+				}
+				else
+					j += max(bmGs[i], bmBc[y[i + j]] - m + 1 + i);
+			}
+			goto1:
+			//int y = strlen(bufWorkNew);
+			//char a[] = "ghj";
+			//char b[] = "asdfghjkl";
 			//char* find2 = memmem_boyermoore(a, 10, b, 6);
+			//int x = BM(a, 3, b, 9);
 
 			find = NULL;
 			if (find != NULL) //если нужная подстрока найдена
@@ -916,7 +1020,7 @@ int main()
 	//int x;
 	//std::string st ("4000000");
 	//char str[10];
-	char str[] = "1";
+	char str[] = "4000000";
 
 	//for (int i = 1; i <= 4000000; i++)
 	//{
