@@ -11,7 +11,8 @@
 #include <vector>
 #include <exception>
 #include <stdio.h>
-//#include <limits.h>
+#include <algorithm>
+#include <functional>
 
 
 
@@ -804,16 +805,20 @@ std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, boo
 		return "";
 	}
 	// читаем данные из файла
-	unsigned char* findStrA = reinterpret_cast<unsigned char*>(findStr);
-	unsigned char* bufWorkNewA = reinterpret_cast<unsigned char*>(bufWorkNew);
-	////int x = BM(findStrA, findStrLen, bufWorkNewA, dwBytesReadWork + strStartLen);
 
-	unsigned char *x = findStrA;
-	int m = findStrLen;
-	int i, j, bmGs[XSIZE], bmBc[ASIZE];
-	/* Preprocessing */
-	preBmGs(x, m, bmGs);
-	preBmBc(x, m, bmBc);
+
+
+
+	//unsigned char* findStrA = reinterpret_cast<unsigned char*>(findStr);
+	//unsigned char* bufWorkNewA = reinterpret_cast<unsigned char*>(bufWorkNew);
+	//////int x = BM(findStrA, findStrLen, bufWorkNewA, dwBytesReadWork + strStartLen);
+
+	//unsigned char *x = findStrA;
+	//int m = findStrLen;
+	//int i, j, bmGs[XSIZE], bmBc[ASIZE];
+	///* Preprocessing */
+	//preBmGs(x, m, bmGs);
+	//preBmBc(x, m, bmBc);
 
 	for (;;)
 	{
@@ -843,7 +848,23 @@ std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, boo
 	goNextFind:
 		if (findStatus == 0)//goFind
 		{
-			//find = strstr(bufWorkNew, findStr);
+			find = strstr(bufWorkNew, findStr);
+
+			//std::string in(bufWorkNew);
+			//std::string needle(findStr);
+			
+			//auto it = in.find(needle);
+			//auto it = std::search(in.begin(), in.end(), needle.begin(), needle.end());
+			//auto it = std::search(in.begin(), in.end(), std::boyer_moore_searcher(needle.begin(), needle.end()));
+			//auto it = std::search(in.begin(), in.end(),	std::boyer_moore_horspool_searcher(needle.begin(), needle.end()));
+
+			
+
+			//if (it != in.end())
+			//	std::cout << "The string " << needle << " found at offset "
+			//	<< it - in.begin() << '\n';
+
+			
 			//int x = seek_substring_KMP(bufWorkNew, findStr);
 			//find = memmem_boyermoore(bufWorkNew, dwBytesReadWork + strStartLen+1, findStr, 128);
 
@@ -852,31 +873,38 @@ std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, boo
 			//unsigned char* bufWorkNewA = reinterpret_cast<unsigned char*>(bufWorkNew);
 			//////int x = BM(findStrA, findStrLen, bufWorkNewA, dwBytesReadWork + strStartLen);
 
+
 			//unsigned char *x = findStrA;
 			//int m = findStrLen;
-			unsigned char *y = bufWorkNewA;
-			int n = dwBytesReadWork + strStartLen;
-			//int i, j, bmGs[XSIZE], bmBc[ASIZE];
-			///* Preprocessing */
-			////preBmGs(x, m, bmGs);
-			////preBmBc(x, m, bmBc);
-			j = 0;
-			while (j <= n - m) {
-				for (i = m - 1; i >= 0 && x[i] == y[i + j]; --i);
-				if (i < 0) {
-					//printf("%d\n", j);
-					goto goto1;
-					//j += bmGs[0];
-				}
-				else
-					j += max(bmGs[i], bmBc[y[i + j]] - m + 1 + i);
-			}
-			goto1:
-			//int y = strlen(bufWorkNew);
-			//char a[] = "ghj";
-			//char b[] = "asdfghjkl";
-			//char* find2 = memmem_boyermoore(a, 10, b, 6);
-			//int x = BM(a, 3, b, 9);
+			//unsigned char *y = bufWorkNewA;
+			//int n = dwBytesReadWork + strStartLen;
+			//////int i, j, bmGs[XSIZE], bmBc[ASIZE];
+			///////* Preprocessing */
+			////////preBmGs(x, m, bmGs);
+			////////preBmBc(x, m, bmBc);
+
+
+
+			//j = 0;
+			//while (j <= n - m) {
+			//	for (i = m - 1; i >= 0 && x[i] == y[i + j]; --i);
+			//	if (i < 0) {
+			//		//printf("%d\n", j);
+			//		goto goto1;
+			//		//j += bmGs[0];
+			//	}
+			//	else
+			//		j += max(bmGs[i], bmBc[y[i + j]] - m + 1 + i);
+			//}
+			//goto1:
+
+
+
+			////int y = strlen(bufWorkNew);
+			////char a[] = "ghj";
+			////char b[] = "asdfghjkl";
+			////char* find2 = memmem_boyermoore(a, 10, b, 6);
+			////int x = BM(a, 3, b, 9);
 
 			find = NULL;
 			if (find != NULL) //если нужная подстрока найдена
@@ -907,7 +935,6 @@ std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, boo
 					strOut = strOut + std::string(strStart);
 					findStatus = 1;
 				}
-				
 			} //если нужная подстрока найдена
 		}
 		else if (findStatus == 1)//goBuf
@@ -1061,15 +1088,17 @@ int main()
 		t2 = clock();
 		printf("bedvit1: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 
-		//t1 = clock();
-		//sOut2 = XLAT("4000000");
-		//t2 = clock();
-		//printf("XLAT: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+		t1 = clock();
+		sOut2 = XLAT("4000000");
+		t2 = clock();
+		printf("XLAT: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 	}
 
 	system("pause");
 	return 0;
 }
+
+
 
 	//t1 = clock();
 	//if ((x = FindRowsInCSVansiNew(L"C:\\CSV_1_GB.csv", findCh,1,0)) > -1)
