@@ -16,7 +16,7 @@
 
 
 
-size_t GetRowsCountCSVansi(PCTSTR path, bool noBuffering)
+size_t GetRowsCountCSVansi(PCTSTR file, bool fileFlagNoBuffering)
 {
 	HANDLE  hFile;     // дескриптор файла
 	HANDLE  hEndRead;  // дескриптор события
@@ -54,12 +54,12 @@ size_t GetRowsCountCSVansi(PCTSTR path, bool noBuffering)
 
 	// открываем файл для чтения
 	hFile = CreateFile(
-		path,   // имя файла
+		file,   // имя файла
 		GENERIC_READ,          // чтение из файла
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | (noBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
+		FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
@@ -164,7 +164,7 @@ return1:
 	return -1;
 }
 
-int GetRowCSVansi(PCTSTR path, int strNum, bool noBuffering)
+int GetRowCSVansi(PCTSTR file, int strNum, bool fileFlagNoBuffering)
 {
 	HANDLE  hFile;     // дескриптор файла
 	HANDLE  hEndRead;  // дескриптор события
@@ -202,12 +202,12 @@ int GetRowCSVansi(PCTSTR path, int strNum, bool noBuffering)
 
 	// открываем файл для чтения
 	hFile = CreateFile(
-		path,   // имя файла
+		file,   // имя файла
 		GENERIC_READ,          // чтение из файла
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | (noBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
+		FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
@@ -313,7 +313,7 @@ return1:
 	return -1;
 }
 
-int FindRowsInCSVansi(PCTSTR path, const char* findStr, bool multiLine, bool noBuffering)
+int FindRowsInCSVansi(PCTSTR file, const char* findStr, bool multiLine, bool fileFlagNoBuffering)
 {
 	const DWORD  nNumberOfBytesToRead = 16777216;//67108864;//33554432; //16777216;//8388608;//читаем в буфер байты
 char* notAlignBuf = new char[nNumberOfBytesToRead + 4096]; //буфер
@@ -349,12 +349,12 @@ ovl.hEvent = hEndRead;   // событие для оповещения заве�
 
 // открываем файл для чтения
 HANDLE hFile = CreateFile(	// дескриптор файла
-	path,   // имя файла
+	file,   // имя файла
 	GENERIC_READ,          // чтение из файла
 	FILE_SHARE_READ,       // совместный доступ к файлу
 	NULL,                  // защиты нет
 	OPEN_EXISTING,         // открываем существующий файл
-	FILE_FLAG_OVERLAPPED | (noBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
+	FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 	NULL                   // шаблона нет
 );
 // проверяем на успешное открытие
@@ -605,76 +605,6 @@ std::string XLAT(std::string s)
 #define XSIZE 7
 #define ASIZE 256
 
-//void preBmBc(char *x, int m, int bmBc[]) {
-//	int i;
-//
-//	for (i = 0; i < ASIZE; ++i)
-//		bmBc[i] = m;
-//	for (i = 0; i < m - 1; ++i)
-//		bmBc[x[i]] = m - i - 1;
-//}
-//
-//
-//void suffixes(char *x, int m, int *suff) {
-//	int f, g, i;
-//
-//	suff[m - 1] = m;
-//	g = m - 1;
-//	for (i = m - 2; i >= 0; --i) {
-//		if (i > g && suff[i + m - 1 - f] < i - g)
-//			suff[i] = suff[i + m - 1 - f];
-//		else {
-//			if (i < g)
-//				g = i;
-//			f = i;
-//			while (g >= 0 && x[g] == x[g + m - 1 - f])
-//				--g;
-//			suff[i] = f - g;
-//		}
-//	}
-//}
-//
-//void preBmGs(char *x, int m, int bmGs[]) {
-//	int i, j, suff[XSIZE];
-//
-//	suffixes(x, m, suff);
-//
-//	for (i = 0; i < m; ++i)
-//		bmGs[i] = m;
-//	j = 0;
-//	for (i = m - 1; i >= 0; --i)
-//		if (suff[i] == i + 1)
-//			for (; j < m - 1 - i; ++j)
-//				if (bmGs[j] == m)
-//					bmGs[j] = m - 1 - i;
-//	for (i = 0; i <= m - 2; ++i)
-//		bmGs[m - 1 - suff[i]] = m - 1 - i;
-//}
-//
-//
-//int BM(char *x, int m, char *y, int n) {
-//	int i, j, bmGs[XSIZE], bmBc[ASIZE];
-//
-//	/* Preprocessing */
-//	preBmGs(x, m, bmGs);
-//	preBmBc(x, m, bmBc);
-//
-//	/* Searching */
-//	j = 0;
-//	while (j <= n - m) {
-//		for (i = m - 1; i >= 0 && x[i] == y[i + j]; --i);
-//		if (i < 0) {
-//			return j;
-//			j += bmGs[0];
-//		}
-//		else
-//			j += max(bmGs[i], bmBc[y[i + j]] - m + 1 + i);
-//	}
-//	return j;
-//}
-//
-
-
 
 void preBmBc(unsigned char *x, int m, int bmBc[]) {
 	int i;
@@ -744,7 +674,7 @@ int BM(unsigned char *x, int m, unsigned char *y, int n) {
 
 
 
-std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, bool noBuffering)
+std::string FindRowsInCSVansiNew(PCTSTR file, char* findStr, bool multiLine, bool fileFlagNoBuffering)
 {
 	const DWORD  nNumberOfBytesToRead = 16777216;//67108864;//33554432; //16777216;//8388608;//читаем в буфер байты
 	size_t findStrLen = strlen(findStr);
@@ -788,12 +718,12 @@ std::string FindRowsInCSVansiNew(PCTSTR path, char* findStr, bool multiLine, boo
 
 	// открываем файл для чтения
 	HANDLE hFile = CreateFile(	// дескриптор файла
-		path,   // имя файла
+		file,   // имя файла
 		GENERIC_READ,          // чтение из файла
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | (noBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
+		FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
