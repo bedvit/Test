@@ -4,6 +4,21 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+//#include <fstream>
+#include <iterator>
+
+//#include <fstream>
+//#include <string>
+//#include <iostream>
+//#include <cstdlib>
+//#include <ctime>
+//#include <Windows.h>
+//#include <vector>
+//#include <exception>
+//#include <stdio.h>
+//#include <algorithm>
+//#include <functional>
+//#include <ppl.h>
 
 #define XSIZE 47
 #define ASIZE 256
@@ -69,7 +84,8 @@ int BM(unsigned char *x, int m, unsigned char *y, int n) {
 	return -1;
 }
 
-int main0() {
+int main0() 
+{
 	const int N = 4000000; // количество строк
 	std::string str = "Пятый; Тридацть четвертый; 44221100; BBB; CIFRAPOLE; POLEPVTRETYE; ODIN ODIN - TRI; CC; 01.01.2013; 01.01.2013; 8963; 2UTY39ADVGKR; СU707039; 40200М У0026034; -; 11; 2; 150; 1998; 1; -; 21; 1980; 1490; НОМЕР ПЯТЬ; -; ПОЛЕ ОДИН; ПОЛЕ ОДИН ПЯТЬ; -; -";
 	std::string Out("");
@@ -136,7 +152,8 @@ int main0() {
 }
 
 
-int main() {
+int main() 
+{
 	const int N = 4000000; // количество строк
 	std::string str = "Пятый; Тридацть четвертый; 44221100; BBB; CIFRAPOLE; POLEPVTRETYE; ODIN ODIN - TRI; CC; 01.01.2013; 01.01.2013; 8963; 2UTY39ADVGKR; СU707039; 40200М У0026034; -; 11; 2; 150; 1998; 1; -; 21; 1980; 1490; НОМЕР ПЯТЬ; -; ПОЛЕ ОДИН; ПОЛЕ ОДИН ПЯТЬ; -; -";
 	std::string Out("");
@@ -149,36 +166,25 @@ int main() {
 
 	clock_t t1;
 	clock_t t2;
+	std::string FileOut = "C:\\test.txt";
+
+	//t1 = clock();
+	//auto s = strstr(Out.c_str(), needle.c_str());
+	//t2 = clock();
+
 
 	t1 = clock();
-	auto s = strstr(Out.c_str(), needle.c_str());
-	t2 = clock();
-	printf("strstr: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
-	std::cout << "Position " << s - Out.c_str() << std::endl;
+	//вар1
 
-	t1 = clock();
-	auto f = Out.find(needle);
-	t2 = clock();
-	printf("std::find: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
-	std::cout << "Position " << f << std::endl;
-	std::cout << "Out.length() = " << Out.length() << std::endl;
-	
-	t1 = clock();
-	auto sr = std::search(Out.begin(), Out.end(), needle.begin(), needle.end());
-	t2 = clock();
-	printf("std::search: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	std::ofstream fOut(FileOut);//std::ios::out | std::ios::binary
+	if (!fOut.is_open()) { return -1; }
+	//std::ostream_iterator<char*> output_iterator(file2, "\n");// std::ostream_iterator<std::string> output_iterator(output_file, "\n");
+	//std::copy(charPtrArr.begin(), charPtrArr.end(), output_iterator);
+	//file2.close();
 
-	auto bms = std::boyer_moore_searcher(needle.begin(), needle.end());
-	t1 = clock();
-	auto srb = std::search(Out.begin(), Out.end(), bms);
-	t2 = clock();
-	printf("std::boyer_moore_searcher: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	//t2 = clock();
+	//printf("std::find: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); 
 
-	auto bmhs = std::boyer_moore_horspool_searcher(needle.begin(), needle.end());
-	t1 = clock();
-	auto srbs = std::search(Out.begin(), Out.end(), bmhs);
-	t2 = clock();
-	printf("std::boyer_moore_horspool_searcher: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 
 	system("pause");
 	return 0;
