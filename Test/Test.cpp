@@ -1321,7 +1321,7 @@ int main()
 
 
 	t1 = clock();
-	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\file.txt", L"C:\\test2.txt", 0, 0, 0 , 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\CSV_1_GB.csv", L"C:\\test2.txt", 0, 0, 0 , 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
 	t2 = clock();
 	printf("Total: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 	std::cout << tt << std::endl;
