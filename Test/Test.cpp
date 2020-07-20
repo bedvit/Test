@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <functional>
 #include <ppl.h>
-
+#include <shlwapi.h>
 
 
 
@@ -550,12 +550,12 @@ int createfile() //создание файла для теста
 #pragma warning(disable : 4146)
 std::string XLAT(std::string s)
 {
-	clock_t t1;
-	clock_t t2;
+	//clock_t t1;
+	//clock_t t2;
 
 	size_t MAXSTR = 1024;
 	const char* const NAMEFILE = "C:\\CSV_1_GB.csv";
-	t1 = clock();
+	//t1 = clock();
 	std::ifstream is(NAMEFILE, std::ios::in | std::ios::binary);
 
 	size_t size = 100000;
@@ -854,7 +854,7 @@ bool CompareCharPtrDescendingLoc(std::pair <char*, size_t> lhs, std::pair <char*
 }
 
 
-size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int HeaderRowsCount, int OnlySort, int SortOrder, int SetLocale, char* Locale)
+size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int HeaderRowsCount, int OnlySort, int SortOrder, int SetLocale, char* Locale, int fileFlagNoBuffering)
 {
 	clock_t t1 = clock();
 	if (SetLocale != 0) { if (setlocale(LC_COLLATE, Locale) == NULL) { return -1; } }//"ru-RU"
@@ -863,7 +863,7 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 	HANDLE hEvent = CreateEventUniquePtr.get();//используем умный указатель
 	if (hEvent == INVALID_HANDLE_VALUE) { return -1; }
 
-	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileInUniquePtr(CreateFile(FileIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | FILE_FLAG_RANDOM_ACCESS, NULL), &CloseHandle);
+	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileInUniquePtr(CreateFile(FileIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
 	HANDLE hFileIn = CreateFileInUniquePtr.get();//используем умный указатель
 	if (hFileIn == INVALID_HANDLE_VALUE) {
 		return -1; 
@@ -881,16 +881,18 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 	//int fff = sizeof(size_t);
 	//fff = sizeof(p);
 
-	std::unique_ptr<char[]> bufUniquePtr(new char[fileSize + bufSize + 4096 + 1]); //4096 - выравнивание, 1 - '\0', bufSize - для последнего буфера(остаток может быть меньше, но буфер мы должны выдилить полный)
+	std::unique_ptr<char[]> bufUniquePtr(new char[fileSize + bufSize*2 + 4096 + 1]); //4096 - выравнивание, 1 - '\r'+'\0', bufSize*2 - для последнего буфера и пустого (статок может быть меньше, но буфер мы должны выдилить полный + буфер на последнюю, пустую итерацию)
 	char* buf = bufUniquePtr.get() + 4096 - (size_t(bufUniquePtr.get()) % 4096);
 	
 	DWORD error;
 	DWORD bytesRead=0;
+	//DWORD bufBytesRead = 0;
 	size_t bytesReadTotal = 0;
 	bool errHandleEOF = false; //метка конца файла
 	char* find = buf;// указатель для поиска
 	char* findPre = buf;// указатель для поиска
-	char* bufNext = buf; //новый буфер
+	char* bufNext = buf; //новый/асинхронный буфер для читалки ReadFile
+	char* bufTmp = buf; //указатель на количество прочитанных байт в буфере
 	std::pair <char*, size_t> p;
 	std::vector<std::pair <char*, size_t>> charPtrArr;
 	charPtrArr.reserve(10000000);
@@ -911,7 +913,10 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 			switch (error = GetLastError())// решаем что делать с кодом ошибки
 			{
 			case ERROR_IO_PENDING: { break; }		 // асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
-			case ERROR_HANDLE_EOF: { errHandleEOF = true;	break; } // мы достигли конца файла читалкой ReadFile
+			case ERROR_HANDLE_EOF: {
+				errHandleEOF = true;	break; 
+			} // мы достигли конца файла читалкой ReadFile
+			//case ERROR_INVALID_PARAMETER: { errHandleEOF = true;	break; } // мы достигли конца файла читалкой ReadFile
 			default: {	
 				return -1; 
 			}// другие ошибки
@@ -919,10 +924,11 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 		}
 
 		//	//работаем асинхронно, выполняем код, пока ждем чтение с диска//
-		if (bytesReadTotal > 0)
+		if (bytesRead > 0)
 		{	//ставим нуль терминаров  в конце буфера,ищем строки по разделитеkю. далее если в конце буфера символ поиска оставляем нуль терминатор, созраняем новую строку или возвращаем последний символ на место.
-			char chTmp = bufNext[-1];
-			bufNext[-1] = '\0'; //конец буфера
+			bufTmp = buf + bytesReadTotal;
+			char chTmp = bufTmp[-1];
+			bufTmp[-1] = '\0'; //конец буфера
 
 			find = strchr(find, '\n');
 			while (find != NULL)
@@ -935,11 +941,11 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 
 			if (chTmp == '\n') 
 			{ 
-				charPtrArr.push_back({ findPre, bufNext- findPre });
-				findPre = bufNext;
+				charPtrArr.push_back({ findPre, bufTmp - findPre });
+				findPre = bufTmp;
 
 			} //если последний символ
-			else { bufNext[-1] = chTmp; }
+			else { bufTmp[-1] = chTmp; }
 
 			find = buf + bytesReadTotal;
 		}
@@ -955,7 +961,9 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 		{
 			switch (error = GetLastError())// решаем что делать с кодом ошибки
 			{
-			case ERROR_HANDLE_EOF: { goto return0; break; }	// мы достигли конца файла в ходе асинхронной операции
+			case ERROR_HANDLE_EOF: {
+				goto return0; break; 
+			}	// мы достигли конца файла в ходе асинхронной операции
 			default: {	
 				return -1; 
 			}// другие ошибки
@@ -963,8 +971,10 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 		}
 
 		// увеличиваем смещение в файле
+		//bufBytesRead = bytesRead; // количество прочитанных/запичанных байт в буфер
 		bytesReadTotal += bytesRead;//кол-во считанных байт нарастающим итогом
-		bufNext += bytesRead; //добавляем смещение к указателю на буфер
+		//bufNext += bytesRead; //добавляем смещение к указателю на буфер
+		bufNext += bufSize;// при FILE_FLAG_NO_BUFFERING смещение кратно сектору/странице;
 		ui.QuadPart += bufSize; //добавляем смещение к указателю на файл
 		ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
 		ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
@@ -974,8 +984,10 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 
 return0:
 	//CreateFileInUniquePtr.get_deleter();
-	bufNext[0] = '\0'; //конец буфера
-	charPtrArr.push_back({ findPre, ++bufNext - findPre });
+	CreateFileInUniquePtr.reset();//закрываем hFileIn, для случаев когда  FileOut = hFileIn
+
+	bufTmp[0] = '\0'; //конец буфера
+	charPtrArr.push_back({ findPre, ++bufTmp - findPre });
 	clock_t t2 = clock();
 	printf("Load: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 
@@ -1048,7 +1060,7 @@ return0:
 	//file2.close();
 
 	////вар2
-	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileOutUniquePtr(CreateFile(FileOut, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_OVERLAPPED | FILE_FLAG_RANDOM_ACCESS, NULL), &CloseHandle);
+	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileOutUniquePtr(CreateFile(FileOut, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
 	HANDLE hFileOut = CreateFileOutUniquePtr.get();//используем умный указатель
 	if (hFileOut == INVALID_HANDLE_VALUE) { 
 		return -1;
@@ -1077,12 +1089,15 @@ return0:
 	size_t bytesWriteTotal = strSize;// 0; //записано в буфер нарастающим для расчета
 	DWORD bytesWriteOut1 = 0; //записано в первый буфер итого
 	DWORD bytesWriteOut2 = 0; //записано во второй буфер итого
+	LONGLONG bytesEndOfFile = 0; //кратный сектору для FILE_FLAG_NO_BUFFERING
 	//char* bufWrite2Tmp = bufWrite2 - strSize;
 	char* strTmp = charPtrArr[0].first; //первая строка
 	//bool dataEnd = false;
 	
 
 	ui.QuadPart = 0;
+	ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
+	ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
 	//while (bytesWriteOut1 > 0)
 	for (;;)
 	{
@@ -1122,11 +1137,11 @@ return0:
 			}
 		}	//пишем асинхронно
 
-		//ждем, пока завершится асинхронная операция чтения
+		
 
 		if (bytesWriteOut1 > 0)
 		{
-			WaitForSingleObject(hEvent, INFINITE); //WaitForSingleObject
+			WaitForSingleObject(hEvent, INFINITE); //ждем, пока завершится асинхронная операция чтения //WaitForSingleObject
 
 		// проверим результат работы асинхронного чтения // если возникла проблема ... 
 			if (!GetOverlappedResult(hFileOut, &ovl, &bytesRead, FALSE))
@@ -1139,10 +1154,11 @@ return0:
 				}// другие ошибки
 				}// конец процедуры switch (error = GetLastError())
 			}
-		}
-		ui.QuadPart += bytesWriteOut1; //добавляем смещение к указателю на файл
+		ui.QuadPart += bufSize;
+		//ui.QuadPart += bytesWriteOut1; //добавляем смещение к указателю на файл
 		ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
 		ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
+		}
 
 		bytesWriteOut1 = bytesWriteOut2;
 		if (bytesWriteOut1==0){ break; }//если буфер пустой
@@ -1153,6 +1169,25 @@ return0:
 		//bufWrite2 = bufWriteTmp;
 		std::swap(bufWrite1, bufWrite2);
 		/////
+		bytesEndOfFile += bytesWriteOut1;// всего байт для записи
+
+		if (fileFlagNoBuffering != 0 && bytesWriteOut1 != bufSize)
+		{
+			DWORD lpBytesPerSector = 4096;
+			//PathOut = FileOut;
+			//PathRemoveFileSpec(*FileOut);
+			//if (!GetDiskFreeSpace(L"C:\\", NULL, &lpBytesPerSector, NULL, NULL))
+			//{
+			//	return -1;
+			//}
+			//bufPtrWrite2.get() + 4096 - (size_t(bufPtrWrite2.get()) % 4096);
+			//ovl.Pointer = ovl.Pointer + bytesWriteOut1;
+			//ovl.Pointer = ovl.Offset;
+			//memset(bufWrite1 + bytesWriteOut1, 0, bufSize - bytesWriteOut1);
+			bytesWriteOut1 = bytesWriteOut1 + lpBytesPerSector - bytesWriteOut1 % lpBytesPerSector;
+
+			//memset(bufWrite1,0,)
+		}
 
 		///пишем в файл асинхронно из 1го буфера
 		if (!WriteFile(hFileOut, bufWrite1, bytesWriteOut1, NULL, &ovl))
@@ -1165,8 +1200,25 @@ return0:
 			}// другие ошибки
 			}
 		}
+		//WaitForSingleObject(hEvent, INFINITE); //ждем, пока завершится асинхронная операция чтения //WaitForSingleObject
 	}
+
+	//ui.QuadPart = 256;
+	//ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
+	//ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
 	
+	if (fileFlagNoBuffering != 0) //удаляем лишнее при записи всей страницы 4096 байт при флаге fileFlagNoBuffering
+	{
+		li.QuadPart = bytesEndOfFile;
+		if (!SetFilePointerEx(hFileOut, li, NULL, FILE_BEGIN))
+		{
+			return -1;
+		}
+		if (!SetEndOfFile(hFileOut))
+		{
+			return -1;
+		}
+	}
 	clock_t t4 = clock();
 	printf("save: Time - %f\n", (t4 - t33 + .0) / CLOCKS_PER_SEC); // время отработки
 	return RowsCountOut;
@@ -1321,7 +1373,7 @@ int main()
 
 
 	t1 = clock();
-	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\CSV_1_GB.csv", L"C:\\test2.txt", 0, 0, 0 , 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\test.txt", L"C:\\test2.txt", 0, 0, 0 , 0, loc, 0);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
 	t2 = clock();
 	printf("Total: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 	std::cout << tt << std::endl;
