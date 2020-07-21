@@ -857,24 +857,24 @@ bool CompareCharPtrDescendingLoc(std::pair <char*, size_t> lhs, std::pair <char*
 size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int HeaderRowsCount, int OnlySort, int SortOrder, int SetLocale, char* Locale, int fileFlagNoBuffering)
 {
 	clock_t t1 = clock();
-	if (SetLocale != 0) { if (setlocale(LC_COLLATE, Locale) == NULL) { return -1; } }//"ru-RU"
+	if (SetLocale != 0) { if (setlocale(LC_COLLATE, Locale) == NULL) { 
+		return -1; } }//"ru-RU"
 
 	std::unique_ptr<void, decltype(&CloseHandle)>CreateEventUniquePtr(CreateEvent(NULL, FALSE, FALSE, NULL), &CloseHandle);// дескриптор события// создаем события с автоматическим сбросом
 	HANDLE hEvent = CreateEventUniquePtr.get();//используем умный указатель
-	if (hEvent == INVALID_HANDLE_VALUE) { return -1; }
+	if (hEvent == INVALID_HANDLE_VALUE) { 
+		return -1; }
 
 	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileInUniquePtr(CreateFile(FileIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
 	HANDLE hFileIn = CreateFileInUniquePtr.get();//используем умный указатель
 	if (hFileIn == INVALID_HANDLE_VALUE) {
-		return -1; 
-	}
+		return -1; }
 
 	LARGE_INTEGER li; //Представляет 64-разрядное целое число со знаком обединяя два 32-х разрядных
 	li.QuadPart = 0;
 
 	if (GetFileSizeEx(hFileIn, &li) == 0) {
-		return -1;
-	}; //узнаем размер файла
+		return -1; }; //узнаем размер файла
 	size_t fileSize = li.QuadPart;
 	const DWORD  bufSize = 16777216;// 16777216; // 4;//33554432; //16777216;//8388608;//читаем в буфер байты
 	//std::pair <char*, size_t> p;
@@ -914,12 +914,10 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 			{
 			case ERROR_IO_PENDING: { break; }		 // асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
 			case ERROR_HANDLE_EOF: {
-				errHandleEOF = true;	break; 
-			} // мы достигли конца файла читалкой ReadFile
+				errHandleEOF = true;	break; } // мы достигли конца файла читалкой ReadFile
 			//case ERROR_INVALID_PARAMETER: { errHandleEOF = true;	break; } // мы достигли конца файла читалкой ReadFile
 			default: {	
-				return -1; 
-			}// другие ошибки
+				return -1;	}// другие ошибки
 			}
 		}
 
@@ -962,11 +960,9 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 			switch (error = GetLastError())// решаем что делать с кодом ошибки
 			{
 			case ERROR_HANDLE_EOF: {
-				goto return0; break; 
-			}	// мы достигли конца файла в ходе асинхронной операции
+				goto return0; break; }	// мы достигли конца файла в ходе асинхронной операции
 			default: {	
-				return -1; 
-			}// другие ошибки
+				return -1; }// другие ошибки
 			}// конец процедуры switch (error = GetLastError())
 		}
 
@@ -1063,8 +1059,7 @@ return0:
 	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileOutUniquePtr(CreateFile(FileOut, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
 	HANDLE hFileOut = CreateFileOutUniquePtr.get();//используем умный указатель
 	if (hFileOut == INVALID_HANDLE_VALUE) { 
-		return -1;
-	}
+		return -1;	}
 
 	std::unique_ptr<char[]> bufPtrWrite1(new char[bufSize + 4096 + 1]); //4096 - выравнивание, 1 - '\0', bufSize - для последнего буфера(остаток может быть меньше, но буфер мы должны выдилить полный)
 	char* bufWrite1 = bufPtrWrite1.get() + 4096 - (size_t(bufPtrWrite1.get()) % 4096);
@@ -1150,8 +1145,7 @@ return0:
 				{
 				case ERROR_HANDLE_EOF: { goto return0; break; }	// мы достигли конца файла в ходе асинхронной операции
 				default: {
-					return -1;
-				}// другие ошибки
+					return -1;}// другие ошибки
 				}// конец процедуры switch (error = GetLastError())
 			}
 		ui.QuadPart += bufSize;
@@ -1196,8 +1190,7 @@ return0:
 			{
 			case ERROR_IO_PENDING: { break; }// асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
 			default: {
-				return -1;
-			}// другие ошибки
+				return -1;	}// другие ошибки
 			}
 		}
 		//WaitForSingleObject(hEvent, INFINITE); //ждем, пока завершится асинхронная операция чтения //WaitForSingleObject
@@ -1210,14 +1203,10 @@ return0:
 	if (fileFlagNoBuffering != 0) //удаляем лишнее при записи всей страницы 4096 байт при флаге fileFlagNoBuffering
 	{
 		li.QuadPart = bytesEndOfFile;
-		if (!SetFilePointerEx(hFileOut, li, NULL, FILE_BEGIN))
-		{
-			return -1;
-		}
-		if (!SetEndOfFile(hFileOut))
-		{
-			return -1;
-		}
+		if (!SetFilePointerEx(hFileOut, li, NULL, FILE_BEGIN))	{
+			return -1;	}
+		if (!SetEndOfFile(hFileOut))	{
+			return -1;	}
 	}
 	clock_t t4 = clock();
 	printf("save: Time - %f\n", (t4 - t33 + .0) / CLOCKS_PER_SEC); // время отработки
@@ -1373,7 +1362,7 @@ int main()
 
 
 	t1 = clock();
-	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\test.txt", L"C:\\test2.txt", 0, 0, 0 , 0, loc, 0);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\CSV_10_GB.csv", L"C:\\test2.txt", 0, 0, 0 , 0, loc, 1);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
 	t2 = clock();
 	printf("Total: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 	std::cout << tt << std::endl;
