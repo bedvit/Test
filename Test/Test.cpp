@@ -854,7 +854,7 @@ bool CompareCharPtrDescendingLoc(std::pair <char*, size_t> lhs, std::pair <char*
 }
 
 
-size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int HeaderRowsCount, int OnlySort, int SortOrder, int SetLocale, char* Locale, int fileFlagNoBuffering)
+LONGLONG SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int HeaderRowsCount, int OnlySort, int SortOrder, int SetLocale, char* Locale, int fileFlagNoBuffering)
 {
 	clock_t t1 = clock();
 	if (SetLocale != 0) { if (setlocale(LC_COLLATE, Locale) == NULL) { 
@@ -881,12 +881,12 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 	//int fff = sizeof(size_t);
 	//fff = sizeof(p);
 
-	std::unique_ptr<char[]> bufUniquePtr(new char[fileSize + bufSize*2 + 4096 + 1]); //4096 - выравнивание, 1 - '\r'+'\0', bufSize*2 - для последнего буфера и пустого (статок может быть меньше, но буфер мы должны выдилить полный + буфер на последнюю, пустую итерацию)
+	std::unique_ptr<char[]> bufUniquePtr(new char[fileSize + 4096*2 + 1]); //4096 - выравнивание, 1 - '\r'+'\0', bufSize*2 - для последнего буфера и пустого (статок может быть меньше, но буфер мы должны выдилить полный + буфер на последнюю, пустую итерацию)
 	char* buf = bufUniquePtr.get() + 4096 - (size_t(bufUniquePtr.get()) % 4096);
 	
 	DWORD error;
 	DWORD bytesRead=0;
-	//DWORD bufBytesRead = 0;
+	DWORD bufBytesRead = bufSize;
 	size_t bytesReadTotal = 0;
 	bool errHandleEOF = false; //метка конца файла
 	char* find = buf;// указатель для поиска
@@ -908,7 +908,13 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 	// читаем данные из файла
 	for (;;)
 	{
-		if (!ReadFile(hFileIn, bufNext, bufSize, NULL, &ovl))
+		if (fileSize < bufSize)
+		{
+			bufBytesRead = fileSize + 4096 - (size_t(fileSize) % 4096); // сколько нужно считать байт
+
+		}
+
+		if (!ReadFile(hFileIn, bufNext, bufBytesRead, NULL, &ovl))
 		{
 			switch (error = GetLastError())// решаем что делать с кодом ошибки
 			{
@@ -967,9 +973,8 @@ size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Heade
 		}
 
 		// увеличиваем смещение в файле
-		//bufBytesRead = bytesRead; // количество прочитанных/запичанных байт в буфер
 		bytesReadTotal += bytesRead;//кол-во считанных байт нарастающим итогом
-		//bufNext += bytesRead; //добавляем смещение к указателю на буфер
+	
 		bufNext += bufSize;// при FILE_FLAG_NO_BUFFERING смещение кратно сектору/странице;
 		ui.QuadPart += bufSize; //добавляем смещение к указателю на файл
 		ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
@@ -1165,7 +1170,7 @@ return0:
 		/////
 		bytesEndOfFile += bytesWriteOut1;// всего байт для записи
 
-		if (fileFlagNoBuffering != 0 && bytesWriteOut1 != bufSize)
+		if (bytesWriteOut1 != bufSize && fileFlagNoBuffering != 0)
 		{
 			DWORD lpBytesPerSector = 4096;
 			//PathOut = FileOut;
@@ -1362,7 +1367,7 @@ int main()
 
 
 	t1 = clock();
-	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\CSV_10_GB.csv", L"C:\\test2.txt", 0, 0, 0 , 0, loc, 1);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\CSV_0_GB.csv", L"C:\\test2.txt", 0, 0, 0 , 0, loc, 1);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
 	t2 = clock();
 	printf("Total: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 	std::cout << tt << std::endl;
