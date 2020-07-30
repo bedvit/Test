@@ -18,7 +18,7 @@
 
 
 
-size_t GetRowsCountCSVansi(PCTSTR file, bool fileFlagNoBuffering)
+size_t GetRowsCountCSVansi(PCTSTR file, bool FileFlagNoBuffering)
 {
 	// создаем события с автоматическим сбросом
 	HANDLE hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -39,7 +39,7 @@ size_t GetRowsCountCSVansi(PCTSTR file, bool fileFlagNoBuffering)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
+		FILE_FLAG_OVERLAPPED | (FileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
@@ -165,7 +165,7 @@ return1:
 	return -1;
 }
 
-int GetRowCSVansi(PCTSTR file, int strNum, bool fileFlagNoBuffering)
+int GetRowCSVansi(PCTSTR file, int strNum, bool FileFlagNoBuffering)
 {
 		// создаем события с автоматическим сбросом
 	HANDLE hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -187,7 +187,7 @@ int GetRowCSVansi(PCTSTR file, int strNum, bool fileFlagNoBuffering)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
+		FILE_FLAG_OVERLAPPED | (FileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
@@ -314,7 +314,7 @@ return1:
 	return -1;
 }
 
-//int FindRowsInCSVansi0(PCTSTR file, const char* findStr, bool multiLine, bool fileFlagNoBuffering)
+//int FindRowsInCSVansi0(PCTSTR file, const char* findStr, bool multiLine, bool FileFlagNoBuffering)
 //{
 //
 //// создаем события с автоматическим сбросом
@@ -336,7 +336,7 @@ return1:
 //	FILE_SHARE_READ,       // совместный доступ к файлу
 //	NULL,                  // защиты нет
 //	OPEN_EXISTING,         // открываем существующий файл
-//	FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
+//	FILE_FLAG_OVERLAPPED | (FileFlagNoBuffering ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 //	NULL                   // шаблона нет
 //);
 //// проверяем на успешное открытие
@@ -621,7 +621,7 @@ std::string FindRowsInCSVansi(PCTSTR file, char* findStr, bool multiLine)
 		FILE_SHARE_READ,       // совместный доступ к файлу
 		NULL,                  // защиты нет
 		OPEN_EXISTING,         // открываем существующий файл
-		FILE_FLAG_OVERLAPPED | FILE_FLAG_RANDOM_ACCESS,//(fileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
+		FILE_FLAG_OVERLAPPED | FILE_FLAG_RANDOM_ACCESS,//(FileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS),// асинхронный ввод//отключаем системный буфер
 		NULL                   // шаблона нет
 	);
 	// проверяем на успешное открытие
@@ -854,7 +854,7 @@ bool CompareCharPtrDescendingLoc(std::pair <char*, size_t> lhs, std::pair <char*
 }
 
 
-LONGLONG SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int HeaderRowsCount, int OnlySort, int SortOrder, int fileFlagNoBuffering, int SetLocale, wchar_t* Locale)
+LONGLONG SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int HeaderRowsCount, int OnlySort, int SortOrder, int FileFlagNoBuffering, int SetLocale, wchar_t* Locale)
 {
 	clock_t t1 = clock();
 	if (SetLocale != 0) { if (_wsetlocale(LC_COLLATE, Locale) == NULL) {
@@ -865,7 +865,7 @@ LONGLONG SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Hea
 	if (hEvent == INVALID_HANDLE_VALUE) { 
 		return -1; }
 
-	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileInUniquePtr(CreateFile(FileIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
+	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileInUniquePtr(CreateFile(FileIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | (FileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
 	HANDLE hFileIn = CreateFileInUniquePtr.get();//используем умный указатель
 	if (hFileIn == INVALID_HANDLE_VALUE) {
 		return -1; }
@@ -991,7 +991,6 @@ LONGLONG SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int Hea
 		ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
 	}
 
-
 return0:
 	CreateFileInUniquePtr.reset();//закрываем hFileIn, для случаев когда  FileOut = hFileIn
 	if (bytesReadTotal != fileSize) {
@@ -1069,7 +1068,7 @@ return0:
 	//file2.close();
 
 	////вар2
-	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileOutUniquePtr(CreateFile(FileOut, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_OVERLAPPED | (fileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
+	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileOutUniquePtr(CreateFile(FileOut, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_OVERLAPPED | (FileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
 	HANDLE hFileOut = CreateFileOutUniquePtr.get();//используем умный указатель
 	if (hFileOut == INVALID_HANDLE_VALUE) { 
 		return -1;	}
@@ -1164,7 +1163,7 @@ return0:
 		/////
 		
 		bytesWriteTotal += bytesWriteOut1;// всего байт для записи
-		if (bytesWriteOut1 != bufSize && fileFlagNoBuffering != 0)
+		if (bytesWriteOut1 != bufSize && FileFlagNoBuffering != 0)
 		{
 			DWORD lpBytesPerSector = 4096;
 			//PathOut = FileOut;
@@ -1197,7 +1196,7 @@ return0:
 	if (bytesReadTotal != bytesWriteTotal) { //проверка на количество причитанных и записанных байт
 		return -1;
 	}
-	if (fileFlagNoBuffering != 0) //удаляем лишнее при записи всей страницы 4096 байт при флаге fileFlagNoBuffering
+	if (FileFlagNoBuffering != 0) //удаляем лишнее при записи всей страницы 4096 байт при флаге FileFlagNoBuffering
 	{
 		li.QuadPart = bytesWriteTotal;
 		if (!SetFilePointerEx(hFileOut, li, NULL, FILE_BEGIN))	{
@@ -1313,6 +1312,354 @@ int test()
 	return 0;
 }
 
+
+
+
+VOID CALLBACK FileIOCompletionRoutine(
+	DWORD dwErrorCode,                // код завершения
+	DWORD dwNumberOfBytesTransfered,  // передаваемое число байтов
+	LPOVERLAPPED lpOverlapped         // буфер информации I/O
+) {};
+
+//вариант с WriteFileEx
+LONGLONG SortDeleteDuplicateRowsCSVansi2(LPCWSTR FileIn, LPCWSTR FileOut, int HeaderRowsCount, int OnlySort, int SortOrder, int FileFlagNoBuffering, int SetLocale, wchar_t* Locale)
+{
+	clock_t t1 = clock();
+	if (SetLocale != 0) {
+		if (_wsetlocale(LC_COLLATE, Locale) == NULL) {
+			return -1;
+		}
+	}//"ru-RU"
+
+	std::unique_ptr<void, decltype(&CloseHandle)>CreateEventUniquePtr(CreateEvent(NULL, FALSE, FALSE, NULL), &CloseHandle);// дескриптор события// создаем события с автоматическим сбросом
+	HANDLE hEvent = CreateEventUniquePtr.get();//используем умный указатель
+	if (hEvent == INVALID_HANDLE_VALUE) {
+		return -1;
+	}
+
+	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileInUniquePtr(CreateFile(FileIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | (FileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
+	HANDLE hFileIn = CreateFileInUniquePtr.get();//используем умный указатель
+	if (hFileIn == INVALID_HANDLE_VALUE) {
+		return -1;
+	}
+
+	LARGE_INTEGER li; //Представляет 64-разрядное целое число со знаком обединяя два 32-х разрядных
+	li.QuadPart = 0;
+
+	if (GetFileSizeEx(hFileIn, &li) == 0) {
+		return -1;
+	}; //узнаем размер файла
+	size_t fileSize = li.QuadPart;
+	DWORD  bufSize = 16777216;// 16777216; // 4;//33554432; //16777216;//8388608;//читаем в буфер байты
+	if (fileSize < bufSize)
+	{
+		bufSize = fileSize + 4096 - (size_t(fileSize) % 4096);
+	}
+	std::unique_ptr<char[]> bufUniquePtr(new char[fileSize + 4096 * 3 + 1]); //4096 - выравнивание, 1 - '\r'+'\0', bufSize*2 - для последнего буфера и пустого (статок может быть меньше, но буфер мы должны выдилить полный + буфер на последнюю, пустую итерацию)
+	char* buf = bufUniquePtr.get() + 4096 - (size_t(bufUniquePtr.get()) % 4096);
+
+	DWORD error;
+	DWORD bytesRead = 0;
+	DWORD bufBytesRead = bufSize;
+	size_t bytesReadTotal = 0;
+	bool errHandleEOF = false; //метка конца файла
+	char* find = buf;// указатель для поиска
+	char* findPre = buf;// указатель для поиска
+	char* bufNext = buf; //новый/асинхронный буфер для читалки ReadFile
+	char* bufTmp = buf; //указатель на количество прочитанных байт в буфере
+	std::pair <char*, size_t> p;
+	std::vector<std::pair <char*, size_t>> charPtrArr;
+	bool reserve = true;
+
+	_ULARGE_INTEGER ui; //Представляет 64-разрядное целое число без знака обединяя два 32-х разрядных
+	ui.QuadPart = 0;
+
+	OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу// инициализируем структуру OVERLAPPED
+	ovl.Offset = 0;         // младшая часть смещения равна 0
+	ovl.OffsetHigh = 0;      // старшая часть смещения равна 0
+	ovl.hEvent = hEvent;   // событие для оповещения завершения чтения
+
+	// читаем данные из файла
+	for (;;)
+	{
+		bytesReadTotal += bytesRead;//кол-во считанных байт нарастающим итогом
+		LONGLONG rem = fileSize - bytesReadTotal;
+		if (rem < bufSize) {
+			bufBytesRead = rem + 4096 - (size_t(rem) % 4096);
+		}
+
+		if (!ReadFile(hFileIn, bufNext, bufBytesRead, NULL, &ovl))
+		{
+			switch (error = GetLastError())// решаем что делать с кодом ошибки
+			{
+			case ERROR_IO_PENDING: { break; }		 // асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
+			case ERROR_HANDLE_EOF: {
+				errHandleEOF = true;	break; } // мы достигли конца файла читалкой ReadFile
+			//case ERROR_INVALID_PARAMETER: { errHandleEOF = true;	break; } // мы достигли конца файла читалкой ReadFile
+			default: {
+				return -1;	}// другие ошибки
+			}
+		}
+
+		//	//работаем асинхронно, выполняем код, пока ждем чтение с диска//
+		if (bytesRead > 0)
+		{	//ставим нуль терминаров  в конце буфера,ищем строки по разделитеkю. далее если в конце буфера символ поиска оставляем нуль терминатор, созраняем новую строку или возвращаем последний символ на место.
+
+			bufTmp = buf + bytesReadTotal;
+			char chTmp = bufTmp[-1];
+			bufTmp[-1] = '\0'; //конец буфера
+
+			find = strchr(find, '\n');
+			while (find != NULL)
+			{
+				find[0] = '\0';
+				charPtrArr.push_back({ findPre, ++find - findPre }); //длина с нуль-терминатором
+				findPre = find;
+				find = strchr(find, '\n');
+
+				if (reserve) { //оценим количество строк в файле по первой строке и зарезервируем память
+					size_t res = fileSize / charPtrArr[0].second; // * 1.1; //думаем что в среднем по файлу размер строк 1,0 к первой строке
+					if (res > 1000000000) { res = 1000000000; }
+					charPtrArr.reserve(res);
+					reserve = false;
+				}
+			}
+
+			if (chTmp == '\n')
+			{
+				charPtrArr.push_back({ findPre, bufTmp - findPre });
+				findPre = bufTmp;
+
+			} //если последний символ
+			else { bufTmp[-1] = chTmp; }
+
+			find = buf + bytesReadTotal;
+		}
+
+		if (errHandleEOF) { goto return0; }
+		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
+
+		// ждем, пока завершится асинхронная операция чтения
+		WaitForSingleObject(hEvent, INFINITE);
+
+		// проверим результат работы асинхронного чтения // если возникла проблема ... 
+		if (!GetOverlappedResult(hFileIn, &ovl, &bytesRead, FALSE))
+		{
+			switch (error = GetLastError())// решаем что делать с кодом ошибки
+			{
+			case ERROR_HANDLE_EOF: {
+				goto return0; break; }	// мы достигли конца файла в ходе асинхронной операции
+			default: {
+				return -1; }// другие ошибки
+			}// конец процедуры switch (error = GetLastError())
+		}
+
+		bufNext += bufBytesRead;// при FILE_FLAG_NO_BUFFERING смещение кратно сектору/странице;
+		ui.QuadPart += bufBytesRead; //добавляем смещение к указателю на файл
+		ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
+		ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
+	}
+
+return0:
+	CreateFileInUniquePtr.reset();//закрываем hFileIn, для случаев когда  FileOut = hFileIn
+	if (bytesReadTotal != fileSize) {
+		return -1;
+	} //проверяем - весь файл прочитан 
+	bufTmp[0] = '\0'; //конец буфера
+	charPtrArr.push_back({ findPre, ++bufTmp - findPre });
+	clock_t t2 = clock();
+	printf("Load: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+
+	//работа с окончанием последней строки
+	LONGLONG RowsCountOut = charPtrArr.size();
+	size_t strLenEnd = charPtrArr[RowsCountOut - 1].second;
+	if (strLenEnd < 2) { charPtrArr.pop_back(); } // строка с учетом нуль терминатора, удаляем пустую строку, если строка не пустая проставляем окончание '\r'
+	else {
+		charPtrArr[RowsCountOut - 1].first[strLenEnd - 1] = '\r';
+		charPtrArr[RowsCountOut - 1].first[strLenEnd] = '\0';
+		charPtrArr[RowsCountOut - 1].second = strLenEnd + 1;
+		bytesReadTotal += 2; //+1 символ в итоговое количество символов
+	}
+
+	clock_t t22 = clock();
+	printf("Load array: Time - %f\n", (t22 - t2 + .0) / CLOCKS_PER_SEC); // время отработки
+
+	if (SetLocale != 0)
+	{
+		if (SortOrder == 0) { concurrency::parallel_buffered_sort(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrAscendingLoc); } //по возрастанию  используем local - strcoll()
+		else { concurrency::parallel_buffered_sort(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrDescendingLoc); } //по убыванию
+	}
+	else
+	{
+		if (SortOrder == 0) { concurrency::parallel_buffered_sort(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrAscending); } //по возрастанию   используем бинароное сравнение - strcmp()
+		else { concurrency::parallel_buffered_sort(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrDescending); } //по убыванию
+	}
+	//https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c
+	clock_t t3 = clock();
+	printf("Sort: Time - %f\n", (t3 - t22 + .0) / CLOCKS_PER_SEC); // время отработки
+
+	clock_t t33 = clock();
+	if (OnlySort == 0) //если удаляем
+	{
+		std::vector<std::pair <char*, size_t>>::iterator it;
+		it = std::unique(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrEqual);
+		charPtrArr.resize(std::distance(charPtrArr.begin(), it));
+		t33 = clock();
+		printf("dell: Time - %f\n", (t33 - t3 + .0) / CLOCKS_PER_SEC); // время отработки
+	}
+	RowsCountOut = charPtrArr.size();
+
+	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileOutUniquePtr(CreateFile(FileOut, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_OVERLAPPED | (FileFlagNoBuffering != 0 ? FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH : FILE_FLAG_RANDOM_ACCESS), NULL), &CloseHandle);
+	HANDLE hFileOut = CreateFileOutUniquePtr.get();//используем умный указатель
+	if (hFileOut == INVALID_HANDLE_VALUE) {
+		return -1;
+	}
+
+	std::unique_ptr<char[]> bufPtrWrite1(new char[bufSize + 4096 + 1]); //4096 - выравнивание, 1 - '\0', bufSize - для последнего буфера(остаток может быть меньше, но буфер мы должны выдилить полный)
+	char* bufWrite1 = bufPtrWrite1.get() + 4096 - (size_t(bufPtrWrite1.get()) % 4096);
+	bufWrite1[bufSize] = '\0';//добавим нуль-терминатор
+
+	std::unique_ptr<char[]> bufPtrWrite2(new char[bufSize + 4096 + 1]); //4096 - выравнивание, 1 - '\0', bufSize - для последнего буфера(остаток может быть меньше, но буфер мы должны выдилить полный)
+	char* bufWrite2 = bufPtrWrite2.get() + 4096 - (size_t(bufPtrWrite2.get()) % 4096);
+	bufWrite2[bufSize] = '\0';//добавим нуль-терминатор
+
+	size_t strNum = 0; //номер строки
+	size_t strSize = charPtrArr[0].second; //размер строки
+	size_t bytesWriteRow = strSize;// 0; //записано в буфер нарастающим для расчета
+	DWORD bytesWriteOut1 = 0; //записано в первый буфер итого
+	DWORD bytesWriteOut2 = 0; //записано во второй буфер итого
+	LONGLONG bytesWriteTotal = 0; //кратный сектору для FILE_FLAG_NO_BUFFERING
+	char* strTmp = charPtrArr[0].first; //первая строка
+
+	DWORD dwErrorCode = 0;
+
+	ui.QuadPart = 0;
+	ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
+	ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
+
+	for (;;)
+	{
+		//работаем асинхронно - заполяем 2й буфер, пока ждем запись на диск/в кеш
+		for (;;)
+		{
+			if (bytesWriteRow <= bufSize)
+			{
+				memcpy(bufWrite2 + bytesWriteRow - strSize, strTmp, strSize);
+				bufWrite2[bytesWriteRow - 1] = '\n';
+
+				if (++strNum >= RowsCountOut)
+				{
+					bytesWriteOut2 = bytesWriteRow;// bufSize;// bytesWriteRow;
+					bytesWriteRow = UINTMAX_MAX;
+					break;
+				}
+				else
+				{
+					strTmp = charPtrArr[strNum].first;
+					strSize = charPtrArr[strNum].second;
+					bytesWriteRow += strSize; //конец строки в накопительно в буфере
+				}
+			}
+			else if (bytesWriteRow == UINTMAX_MAX) { bytesWriteOut2 = 0;	break; }
+			else
+			{
+				strSize = bufSize - (bytesWriteRow - strSize);
+				memcpy(bufWrite2 + bufSize - strSize, strTmp, strSize);
+				bytesWriteOut2 = bufSize;// bytesWriteRow + strSize; //весь буфер заполнен
+
+				strTmp = strTmp + strSize; //указатель на оставшуюся строку
+				strSize = bytesWriteRow - bufSize;//размер оставшийся строки
+				bytesWriteRow = strSize;// размер накопленной строки в новом буфере
+				break;
+			}
+		}	//пишем асинхронно
+
+		if (bytesWriteOut1 > 0)
+		{
+			WaitForSingleObjectEx(hEvent, INFINITE, TRUE); //ждем, пока завершится асинхронная операция чтения //WaitForSingleObject
+			//SleepEx(INFINITE, TRUE); //WAIT_TO_COMPLETION
+
+			//DWORD Res = SleepEx(INFINITE, TRUE);
+			//switch (Res) {
+			//case 0:
+			//	break;
+			//case WAIT_IO_COMPLETION:
+			//	break;
+			//default:
+			//	return -1;
+			//}
+
+			//switch (&FileIOCompletionRoutine->) {
+			//case 0:
+			//	break;
+			//case WAIT_IO_COMPLETION:
+			//	break;
+			//default:
+			//	return -1;
+			//}
+
+		// проверим результат работы асинхронного чтения // если возникла проблема ... 
+			if (!GetOverlappedResult(hFileOut, &ovl, &bytesRead, FALSE))
+			{
+				switch (error = GetLastError())// решаем что делать с кодом ошибки
+				{
+				case ERROR_HANDLE_EOF: { goto return0; break; }	// мы достигли конца файла в ходе асинхронной операции
+				default: {
+					return -1; }// другие ошибки
+				}// конец процедуры switch (error = GetLastError())
+			}
+			if (bytesRead != bytesWriteOut1) {
+				return -1;
+			} //проверяем все ли записано
+
+
+			ui.QuadPart += bufSize;
+			ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
+			ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
+		}
+
+		bytesWriteOut1 = bytesWriteOut2;
+		if (bytesWriteOut1 == 0) { break; }//если буфер пустой
+		
+		std::swap(bufWrite1, bufWrite2);//меняем буфер
+
+		bytesWriteTotal += bytesWriteOut1;// всего байт для записи
+		if (bytesWriteOut1 != bufSize && FileFlagNoBuffering != 0)	{	bytesWriteOut1 = bytesWriteOut1 + 4096 - bytesWriteOut1 % 4096;	}
+
+		///пишем в файл асинхронно из 1го буфера
+		//LPOVERLAPPED_COMPLETION_ROUTINE FileIOCompletionRoutine;
+		//FileIOCompletionRoutine(dwErrorCode, bytesRead, &ovl);
+		if (WriteFileEx(hFileOut, bufWrite1, bytesWriteOut1,  &ovl, &FileIOCompletionRoutine))
+		{
+			//switch (error = GetLastError())
+			//{
+			//case ERROR_IO_PENDING: { 
+			//	break; }// асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
+			//case ERROR_SUCCESS: { 
+			//	break; }//Если вызов функции успешен и нет условий предупреждения, GetLastError вернет ERROR_SUCCESS (0)
+			//default: {
+			//	return -1;	}// другие ошибки
+			//}
+		}
+	}
+
+	if (bytesReadTotal != bytesWriteTotal) { //проверка на количество причитанных и записанных байт
+		return -1;
+	}
+	if (FileFlagNoBuffering != 0) //удаляем лишнее при записи всей страницы 4096 байт при флаге FileFlagNoBuffering
+	{
+		li.QuadPart = bytesWriteTotal;
+		if (!SetFilePointerEx(hFileOut, li, NULL, FILE_BEGIN)) {
+			return -1;
+		}
+		if (!SetEndOfFile(hFileOut)) {
+			return -1;
+		}
+	}
+	clock_t t4 = clock();
+	printf("save: Time - %f\n", (t4 - t33 + .0) / CLOCKS_PER_SEC); // время отработки
+	return RowsCountOut;
+}
 int main()
 {
 	//0.53
@@ -1358,14 +1705,27 @@ int main()
 	////printf("main0: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 
 
+
+
 	t1 = clock();
-	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\file.txt", L"C:\\test2.txt", 0, 0, 0, 0, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
-	//auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\CSV_1_GB.csv", L"C:\\test2.txt", 0, 0, 0, 0, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	//auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\file.txt", L"C:\\test2.txt", 0, 0, 0, 0, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\CSV_1_GB.csv", L"C:\\test2.txt", 0, 0, 0, 1, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
 	//auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\CSV_10_GB.csv", L"C:\\test2.txt", 0, 0, 0 , 1, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
 	//auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\test.txt", L"C:\\test2.txt", 0, 0, 0, 1, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
 	t2 = clock();
 	printf("Total: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
 	std::cout << tt << std::endl;
+
+
+	t1 = clock();
+	//auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\file.txt", L"C:\\test2.txt", 0, 0, 0, 0, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	tt = SortDeleteDuplicateRowsCSVansi2(L"C:\\CSV_1_GB.csv", L"C:\\test2.txt", 0, 0, 0, 1, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	//auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\CSV_10_GB.csv", L"C:\\test2.txt", 0, 0, 0 , 1, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	//auto tt = SortDeleteDuplicateRowsCSVansi(L"C:\\test.txt", L"C:\\test2.txt", 0, 0, 0, 1, 0, loc);//"C:\\file.txt" test.txt 111 C:\\CSV_1_GB.csv
+	t2 = clock();
+	printf("Total2: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
+	std::cout << tt << std::endl;
+
 
 
 	//for (int i = 1; i <= 4000000; i++)
@@ -1595,315 +1955,3 @@ int main333() {
 
 
 
-
-//
-//
-//
-//
-//
-///////////////////////////////////////////////
-//bool CompareCharPtrEqual(char* lhs, char* rhs) {
-//	if (lhs == NULL && rhs == NULL) return true;
-//	if (lhs == NULL || rhs == NULL) return false;
-//	return strcmp(lhs, rhs) == 0;
-//}
-//bool CompareCharPtrAscending(char* lhs, char* rhs) {
-//	if (lhs == NULL) return false;
-//	if (rhs == NULL) return true;
-//	return strcmp(lhs, rhs) < 0;//strcoll
-//}
-//bool CompareCharPtrDescending(char* lhs, char* rhs) {
-//	if (lhs == NULL) return false;
-//	if (rhs == NULL) return true;
-//	return 	strcmp(lhs, rhs) > 0;
-//}
-//bool CompareCharPtrAscendingLoc(char* lhs, char* rhs) {
-//	if (lhs == NULL) return false;
-//	if (rhs == NULL) return true;
-//	return strcoll(lhs, rhs) < 0;//strcoll
-//}
-//bool CompareCharPtrDescendingLoc(char* lhs, char* rhs) {
-//	if (lhs == NULL) return false;
-//	if (rhs == NULL) return true;
-//	return 	strcoll(lhs, rhs) > 0;
-//}
-//size_t SortDeleteDuplicateRowsCSVansi(LPCWSTR FileIn, LPCWSTR FileOut, int HeaderRowsCount, int OnlySort, int SortOrder, int SetLocale, char* Locale)
-//{
-//	clock_t t1 = clock();
-//	if (SetLocale != 0) { if (setlocale(LC_COLLATE, Locale) == NULL) { return -1; } }//"ru-RU"
-//
-//	std::unique_ptr<void, decltype(&CloseHandle)>CreateEventUniquePtr(CreateEvent(NULL, FALSE, FALSE, NULL), &CloseHandle);// дескриптор события// создаем события с автоматическим сбросом
-//	HANDLE hEvent = CreateEventUniquePtr.get();//используем умный указатель
-//	if (hEvent == INVALID_HANDLE_VALUE) { return -1; }
-//
-//	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileInUniquePtr(CreateFile(FileIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | FILE_FLAG_RANDOM_ACCESS, NULL), &CloseHandle);
-//	HANDLE hFileIn = CreateFileInUniquePtr.get();//используем умный указатель
-//	if (hFileIn == INVALID_HANDLE_VALUE) {
-//		return -1;
-//	}
-//
-//	LARGE_INTEGER li; //Представляет 64-разрядное целое число со знаком обединяя два 32-х разрядных
-//	li.QuadPart = 0;
-//
-//	if (GetFileSizeEx(hFileIn, &li) == 0) {
-//		return -1;
-//	}; //узнаем размер файла
-//	size_t fileSize = li.QuadPart;
-//	const DWORD  bufSize = 16777216;// 16777216; // 4;//33554432; //16777216;//8388608;//читаем в буфер байты
-//	//int fff = sizeof(bufSize);
-//
-//	std::unique_ptr<char[]> bufPtr(new char[fileSize + bufSize + 4096 + 1]); //4096 - выравнивание, 1 - '\0', bufSize - для последнего буфера(остаток может быть меньше, но буфер мы должны выдилить полный)
-//	char* buf = bufPtr.get() + 4096 - (size_t(bufPtr.get()) % 4096);
-//
-//	DWORD error;
-//	DWORD bytesRead = 0;
-//	size_t bytesReadTotal = 0;
-//	bool errHandleEOF = false; //метка конца файла
-//	char* find = buf;// указатель для поиска
-//	char* bufNext = buf;
-//	std::vector<char*> charPtrArr;
-//	charPtrArr.push_back(buf);
-//
-//	_ULARGE_INTEGER ui; //Представляет 64-разрядное целое число без знака обединяя два 32-х разрядных
-//	ui.QuadPart = 0;
-//
-//	OVERLAPPED  ovl;   // структура управления асинхронным доступом к файлу// инициализируем структуру OVERLAPPED
-//	ovl.Offset = 0;         // младшая часть смещения равна 0
-//	ovl.OffsetHigh = 0;      // старшая часть смещения равна 0
-//	ovl.hEvent = hEvent;   // событие для оповещения завершения чтения
-//
-//	// читаем данные из файла
-//	for (;;)
-//	{
-//		if (!ReadFile(hFileIn, bufNext, bufSize, NULL, &ovl))
-//		{
-//			switch (error = GetLastError())// решаем что делать с кодом ошибки
-//			{
-//			case ERROR_IO_PENDING: { break; }		 // асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
-//			case ERROR_HANDLE_EOF: { errHandleEOF = true;	break; } // мы достигли конца файла читалкой ReadFile
-//			default: {
-//				return -1;
-//			}// другие ошибки
-//			}
-//		}
-//
-//		//	//работаем асинхронно, выполняем код, пока ждем чтение с диска//
-//		if (bytesReadTotal > 0)
-//		{	//ставим нуль терминаров  в конце буфера,ищем строки по разделитедю. далее если в конце буфера символ поиска оставляем нуль терминатор, созраняем новую строку или возвращаем последний символ на место.
-//			char chTmp = bufNext[-1];
-//			bufNext[-1] = '\0'; //конец буфера
-//
-//			find = strchr(find, '\n');
-//			while (find != NULL)
-//			{
-//				find[0] = '\0';
-//				charPtrArr.push_back(++find);
-//				find = strchr(find, '\n');
-//			}
-//
-//			if (chTmp == '\n') { charPtrArr.push_back(bufNext); } //если последний символ
-//			else { bufNext[-1] = chTmp; }
-//
-//			find = buf + bytesReadTotal;
-//		}
-//
-//
-//		if (errHandleEOF) { goto return0; }
-//		//работаем асинхронно, выполняем код, пока ждем чтение с диска//
-//
-//		// ждем, пока завершится асинхронная операция чтения
-//		WaitForSingleObject(hEvent, INFINITE);
-//
-//		// проверим результат работы асинхронного чтения // если возникла проблема ... 
-//		if (!GetOverlappedResult(hFileIn, &ovl, &bytesRead, FALSE))
-//		{
-//			switch (error = GetLastError())// решаем что делать с кодом ошибки
-//			{
-//			case ERROR_HANDLE_EOF: { goto return0; break; }	// мы достигли конца файла в ходе асинхронной операции
-//			default: {
-//				return -1;
-//			}// другие ошибки
-//			}// конец процедуры switch (error = GetLastError())
-//		}
-//
-//		// увеличиваем смещение в файле
-//		bytesReadTotal += bytesRead;//кол-во считанных байт нарастающим итогом
-//		bufNext += bytesRead; //добавляем смещение к указателю на буфер
-//		ui.QuadPart += bufSize; //добавляем смещение к указателю на файл
-//		ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
-//		ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
-//	}
-//	//return1:
-//	//	return RowsCountOut;
-//
-//return0:
-//	//CreateFileInUniquePtr.get_deleter();
-//	clock_t t2 = clock();
-//	printf("Load: Time - %f\n", (t2 - t1 + .0) / CLOCKS_PER_SEC); // время отработки
-//	bufNext[0] = '\0'; //конец буфера
-//
-//	//синхронная версия////////
-//	//find = buf;
-//	//find = strchr(find, '\n');
-//	//while (find != NULL)
-//	//{
-//	//	find[0] = '\0';
-//	//	charPtrArr.push_back(++find);
-//	//	find = strchr(find, '\n');
-//	//}
-//	///////////////////////////
-//
-//	//работа с окончанием последней строки
-//	size_t strLenEnd = strlen(charPtrArr[charPtrArr.size() - 1]);
-//	if (strLenEnd == 0) { charPtrArr.pop_back(); } //удаляем пустую строку, если строка не пустая проставляем окончание '\r'
-//	else {
-//		charPtrArr[charPtrArr.size() - 1][strLenEnd] = '\r';
-//		charPtrArr[charPtrArr.size() - 1][strLenEnd + 1] = '\0';
-//	}
-//
-//	clock_t t22 = clock();
-//	printf("Load array: Time - %f\n", (t22 - t2 + .0) / CLOCKS_PER_SEC); // время отработки
-//
-//	if (SetLocale != 0)
-//	{
-//		if (SortOrder == 0) { concurrency::parallel_buffered_sort(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrAscendingLoc); } //по возрастанию  используем local - strcoll()
-//		else { concurrency::parallel_buffered_sort(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrDescendingLoc); } //по убыванию
-//	}
-//	else
-//	{
-//		if (SortOrder == 0) { concurrency::parallel_buffered_sort(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrAscending); } //по возрастанию   используем бинароное сравнение - strcmp()
-//		else { concurrency::parallel_buffered_sort(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrDescending); } //по убыванию
-//	}
-//	//https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c
-//	clock_t t3 = clock();
-//	printf("Sort: Time - %f\n", (t3 - t22 + .0) / CLOCKS_PER_SEC); // время отработки
-//
-//	clock_t t33 = clock();
-//	if (OnlySort == 0) //если удаляем
-//	{
-//		std::vector<char*>::iterator it;
-//		it = std::unique(charPtrArr.begin() + HeaderRowsCount, charPtrArr.end(), CompareCharPtrEqual);
-//		charPtrArr.resize(std::distance(charPtrArr.begin(), it));
-//		t33 = clock();
-//		printf("dell: Time - %f\n", (t33 - t3 + .0) / CLOCKS_PER_SEC); // время отработки
-//	}
-//	size_t RowsCountOut = charPtrArr.size();
-//
-//
-//	////вар1
-//	//std::ofstream file2(FileOut, std::ios::out | std::ios::binary);
-//	//if (!file2.is_open()) {	return RowsCountOut;	}
-//	//std::ostream_iterator<char*> output_iterator(file2, "\n");// std::ostream_iterator<std::string> output_iterator(output_file, "\n");
-//	//std::copy(charPtrArr.begin(), charPtrArr.end(), output_iterator);
-//	//file2.close();
-//
-//	////вар2
-//	std::unique_ptr<void, decltype(&CloseHandle)>CreateFileOutUniquePtr(CreateFile(FileOut, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_OVERLAPPED | FILE_FLAG_RANDOM_ACCESS, NULL), &CloseHandle);
-//	HANDLE hFileOut = CreateFileOutUniquePtr.get();//используем умный указатель
-//	if (hFileOut == INVALID_HANDLE_VALUE) {
-//		return -1;
-//	}
-//
-//	std::unique_ptr<char[]> bufPtrWrite1(new char[bufSize + 4096 + 1]); //4096 - выравнивание, 1 - '\0', bufSize - для последнего буфера(остаток может быть меньше, но буфер мы должны выдилить полный)
-//	char* bufWrite1 = bufPtrWrite1.get() + 4096 - (size_t(bufPtr.get()) % 4096);
-//	bufWrite1[bufSize] = '\0';//добавим нуль-терминатор
-//
-//	std::unique_ptr<char[]> bufPtrWrite2(new char[bufSize + 4096 + 1]); //4096 - выравнивание, 1 - '\0', bufSize - для последнего буфера(остаток может быть меньше, но буфер мы должны выдилить полный)
-//	char* bufWrite2 = bufPtrWrite2.get() + 4096 - (size_t(bufPtr.get()) % 4096);
-//	bufWrite2[bufSize] = '\0';//добавим нуль-терминатор
-//
-//	DWORD bytesWriteOut1 = 0; //записано в первый буфер итого
-//	DWORD bytesWriteOut2 = 0; //записано во второй буфер итого
-//	DWORD bytesWriteRow = 0; //записано в буфер нарастающим для расчета
-//	size_t strNum = 0; //номер строки
-//	size_t strSize = 0; //размер строки
-//	char* strTmp = charPtrArr[0]; //первая строка
-//	bool dataEnd = false;
-//
-//	ui.QuadPart = 0;
-//	//while (bytesWriteOut1 > 0)
-//	for (;;)
-//	{
-//		//работаем асинхронно - заполяем 2й буфер, пока ждем запись на диск/в кеш
-//		for (;;)
-//		{
-//			if (dataEnd)
-//			{
-//				bytesWriteOut2 = 0;
-//				break;
-//			}
-//			strSize = strlen(strTmp) + 1; // + нуль терминатор
-//
-//			if (bytesWriteRow + strSize <= bufSize)
-//			{
-//				memcpy(bufWrite2 + bytesWriteRow, strTmp, strSize);
-//				bytesWriteRow += strSize;
-//				bufWrite2[bytesWriteRow - 1] = '\n';
-//				//bufWrite2[bytesWriteRow] = EOF;// '\0';
-//				if (++strNum >= charPtrArr.size())
-//				{
-//					bytesWriteOut2 = bytesWriteRow;// bufSize;// bytesWriteRow;
-//					dataEnd = true;
-//					break;
-//				}
-//				else { strTmp = charPtrArr[strNum]; }
-//			}
-//			else
-//			{
-//				strSize = bufSize - bytesWriteRow;
-//				memcpy(bufWrite2 + bytesWriteRow, strTmp, strSize);
-//				bytesWriteOut2 = bytesWriteRow + strSize;
-//				bytesWriteRow = 0;
-//				strTmp = strTmp + strSize;
-//				break;
-//			}
-//		}	//пишем асинхронно
-//
-//		//ждем, пока завершится асинхронная операция чтения
-//		if (bytesWriteOut1 > 0)
-//		{
-//			WaitForSingleObject(hEvent, INFINITE); //WaitForSingleObject
-//
-//		// проверим результат работы асинхронного чтения // если возникла проблема ... 
-//			if (!GetOverlappedResult(hFileOut, &ovl, &bytesRead, FALSE))
-//			{
-//				switch (error = GetLastError())// решаем что делать с кодом ошибки
-//				{
-//				case ERROR_HANDLE_EOF: { goto return0; break; }	// мы достигли конца файла в ходе асинхронной операции
-//				default: {
-//					return -1;
-//				}// другие ошибки
-//				}// конец процедуры switch (error = GetLastError())
-//			}
-//		}
-//		ui.QuadPart += bytesWriteOut1; //добавляем смещение к указателю на файл
-//		ovl.Offset = ui.LowPart;// вносим смещение в младшее слово
-//		ovl.OffsetHigh = ui.HighPart;// вносим смещение в старшеее слово
-//
-//		bytesWriteOut1 = bytesWriteOut2;
-//		if (bytesWriteOut1 == 0) { break; }//если буфер пустой
-//
-//		//меняем буфер
-//		//char* bufWriteTmp = bufWrite1;
-//		//bufWrite1 = bufWrite2;
-//		//bufWrite2 = bufWriteTmp;
-//		std::swap(bufWrite1, bufWrite2);
-//		/////
-//
-//		///пишем в файл асинхронно из 1го буфера
-//		if (!WriteFile(hFileOut, bufWrite1, bytesWriteOut1, NULL, &ovl))
-//		{
-//			switch (error = GetLastError())
-//			{
-//			case ERROR_IO_PENDING: { break; }// асинхронный ввод-вывод все еще происходит // сделаем кое-что пока он идет 
-//			default: {
-//				return -1;
-//			}// другие ошибки
-//			}
-//		}
-//	}
-//
-//	clock_t t4 = clock();
-//	printf("save: Time - %f\n", (t4 - t33 + .0) / CLOCKS_PER_SEC); // время отработки
-//	return RowsCountOut;
-//}
