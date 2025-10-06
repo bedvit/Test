@@ -67,7 +67,8 @@ UserFormXLL::UserFormXLL(std::function<int(HWND, UINT, WPARAM, LPARAM)> funcPtr)
 	hMainWnd = CreateWindowExW(0, szClassName, L"ClassWindowsXLL",WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW & (~WS_MINIMIZEBOX), 100, 100, 500, 500, NULL, NULL, hInstance, NULL);//eWindowEx(WS_EX_APPWINDOW, szClassName, lpWindowName, WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_VSCROLL| WS_THICKFRAME, (GetSystemMetrics(SM_CXSCREEN) >> 1) - (fWidth >> 1), (GetSystemMetrics(SM_CYSCREEN) >> 1) - (fHeight >> 1), fWidth, fHeight, HwndExcel(), NULL, hInstance, NULL);//HwndExcel()
 	mapFF.insert({ hMainWnd, funcPtr });
 
-	CreateWindowExW(0, L"Button", L"Button", WS_CLIPSIBLINGS | WS_CHILD | WS_VISIBLE | BS_FLAT | BS_PUSHBUTTON | BS_MULTILINE, 1, 1, 200, 200, hMainWnd, HMENU(333), hInstance, NULL);
+	//CreateWindowExW(0, L"Button", L"Button", WS_CLIPSIBLINGS | WS_CHILD | WS_VISIBLE | BS_FLAT | BS_PUSHBUTTON | BS_MULTILINE, 1, 1, 200, 200, hMainWnd, HMENU(333), hInstance, NULL);
+	CreateWindowExW(0, L"STATIC", L"STATIC Button", WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE, 1, 1, 150, 50, hMainWnd, HMENU(333), hInstance, NULL);
 
 	ShowWindow(hMainWnd, nCmdShow);
 	UpdateWindow(hMainWnd);
