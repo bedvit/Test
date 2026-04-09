@@ -1,0 +1,1591 @@
+ <!DOCTYPE html>
+		<html
+			class="layout layout-holy-grail   show-table-of-contents conceptual show-breadcrumb default-focus"
+			lang="ru-ru"
+			dir="ltr"
+			data-authenticated="false"
+			data-auth-status-determined="false"
+			data-target="docs"
+			x-ms-format-detection="none"
+		>
+			
+		<head>
+			<title>Обзор C++ AMP | Microsoft Learn</title>
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			<meta name="color-scheme" content="light dark" />
+
+			<meta name="description" content="Дополнительные сведения: Обзор C++ AMP" />
+			<link rel="canonical" href="https://learn.microsoft.com/ru-ru/previous-versions/cpp/parallel/amp/cpp-amp-overview?view=msvc-170" /> 
+
+			<!-- Non-customizable open graph and sharing-related metadata -->
+			<meta name="twitter:card" content="summary_large_image" />
+			<meta name="twitter:site" content="@MicrosoftLearn" />
+			<meta property="og:type" content="website" />
+			<meta property="og:image:alt" content="Microsoft Learn" />
+			<meta property="og:image" content="https://learn.microsoft.com/en-us/media/open-graph-image.png" />
+			<!-- Page specific open graph and sharing-related metadata -->
+			<meta property="og:title" content="Обзор C++ AMP" />
+			<meta property="og:url" content="https://learn.microsoft.com/ru-ru/previous-versions/cpp/parallel/amp/cpp-amp-overview?view=msvc-170" />
+			<meta property="og:description" content="Дополнительные сведения: Обзор C++ AMP" />
+			<meta name="platform_id" content="bc7e67fc-6b9f-cd5f-3da0-b32c9dcc525a" /> 
+			<meta name="locale" content="ru-ru" />
+			 
+			<meta name="uhfHeaderId" content="MSDocsHeader-Archive" />
+
+			<meta name="page_type" content="conceptual" />
+
+			<!--page specific meta tags-->
+			
+
+			<!-- custom meta tags -->
+			
+		<meta name="schema" content="Conceptual" />
+	
+		<meta name="audience" content="developer" />
+	
+		<meta name="author" content="TylerMSFT" />
+	
+		<meta name="breadcrumb_path" content="../../_breadcrumb/vcppdocs-archive/toc.json" />
+	
+		<meta name="default_moniker" content="msvc-170" />
+	
+		<meta name="depot_name" content="Learn.vcppdocs-archive" />
+	
+		<meta name="docs_archive" content="tool" />
+	
+		<meta name="document_id" content="9b8e16b9-9c28-b432-b50e-013d6ca9dd32" />
+	
+		<meta name="document_version_independent_id" content="d6cd5ae0-5b36-305a-9986-9f3c088796c1" />
+	
+		<meta name="feedback_help_link_type" content="get-help-at-qna" />
+	
+		<meta name="feedback_help_link_url" content="https://learn.microsoft.com/en-us/answers/tags/314/cpp" />
+	
+		<meta name="feedback_system" content="None" />
+	
+		<meta name="git_commit_id" content="176b390d0403e7fa1b0eb1afd6b83303c861b754" />
+	
+		<meta name="gitcommit" content="https://github.com/MicrosoftDocs/cpp-docs-archive-pr/blob/176b390d0403e7fa1b0eb1afd6b83303c861b754/docs/msvc-160/parallel/amp/cpp-amp-overview.md" />
+	
+		<meta name="is_archived" content="true" />
+	
+		<meta name="manager" content="coxford" />
+	
+		<meta name="monikers" content="msvc-160" />
+	
+		<meta name="ms.author" content="twhitney" />
+	
+		<meta name="ms.date" content="2018-11-19T00:00:00Z" />
+	
+		<meta name="ms.service" content="visual-cpp" />
+	
+		<meta name="ms.subservice" content="parallel-programming" />
+	
+		<meta name="ms.tgt_pltfrm" content="Windows" />
+	
+		<meta name="ms.topic" content="concept-article" />
+	
+		<meta name="ms.update-cycle" content="3650-days" />
+	
+		<meta name="ms.workload" content="cplusplus" />
+	
+		<meta name="original_content_git_url" content="https://github.com/MicrosoftDocs/cpp-docs-archive-pr/blob/live/docs/msvc-160/parallel/amp/cpp-amp-overview.md" />
+	
+		<meta name="replace_monikers" content="msvc-160" />
+	
+		<meta name="ROBOTS" content="NOINDEX,NOFOLLOW" />
+	
+		<meta name="site_name" content="Docs" />
+	
+		<meta name="tilde_path" content="msvc-160" />
+	
+		<meta name="updated_at" content="2026-03-31T19:31:00Z" />
+	
+		<meta name="ms.translationtype" content="MT" />
+	
+		<meta name="ms.contentlocale" content="ru-ru" />
+	
+		<meta name="loc_version" content="2026-03-31T16:22:08.8988467Z" />
+	
+		<meta name="loc_source_id" content="Github-1183501748#live" />
+	
+		<meta name="loc_file_id" content="Github-1183501748.live.Learn.vcppdocs-archive.msvc-160/parallel/amp/cpp-amp-overview.md" />
+	
+		<meta name="toc_rel" content="../toc.json" />
+	
+		<meta name="feedback_product_url" content="" />
+	
+		<meta name="search.mshattr.devlang" content="cpp" />
+	
+		<meta name="word_count" content="3331" />
+	
+		<meta name="asset_id" content="parallel/amp/cpp-amp-overview" />
+	
+		<meta name="item_type" content="Content" />
+	
+		<meta name="previous_tlsh_hash" content="F98162D28814EF1A427BD29A165486411EB1E593DA1279629EE07841749A051DFFC423B7B8A296AE149E5202B00BD908BE0D7CFB84FE3FBBA32614653D7F34F3074C77DB2E" />
+	
+		<meta name="github_feedback_content_git_url" content="https://github.com/MicrosoftDocs/cpp-docs-archive-pr/blob/live/docs/msvc-160/parallel/amp/cpp-amp-overview.md" />
+	
+		<meta name="markdown_url" content="https://learn.microsoft.com/ru-ru/previous-versions/cpp/parallel/amp/cpp-amp-overview?view=msvc-170&amp;accept=text/markdown" />
+	 
+
+			<!-- assets and js globals -->
+			
+			<link rel="stylesheet" href="/static/assets/0.4.03383.7690-c9b47f95/styles/site.css" />
+			
+			<script src="https://wcpstatic.microsoft.com/mscc/lib/v2/wcp-consent.js"></script>
+			<script src="https://js.monitor.azure.com/scripts/c/ms.jsll-4.min.js"></script>
+			<script src="/_themes/docs.theme/master/ru-ru/_themes/global/deprecation.js"></script>
+
+			<!-- msdocs global object -->
+			<script id="msdocs-script">
+		var msDocs = {
+  "environment": {
+    "accessLevel": "online",
+    "azurePortalHostname": "portal.azure.com",
+    "reviewFeatures": false,
+    "supportLevel": "production",
+    "systemContent": true,
+    "siteName": "learn",
+    "legacyHosting": false
+  },
+  "data": {
+    "contentLocale": "ru-ru",
+    "contentDir": "ltr",
+    "userLocale": "ru-ru",
+    "userDir": "ltr",
+    "pageTemplate": "Conceptual",
+    "brand": "",
+    "context": {},
+    "standardFeedback": false,
+    "showFeedbackReport": false,
+    "feedbackHelpLinkType": "get-help-at-qna",
+    "feedbackHelpLinkUrl": "https://learn.microsoft.com/en-us/answers/tags/314/cpp",
+    "feedbackSystem": "None",
+    "feedbackGitHubRepo": "",
+    "feedbackProductUrl": "",
+    "extendBreadcrumb": false,
+    "isEditDisplayable": false,
+    "isPrivateUnauthorized": false,
+    "hideViewSource": false,
+    "isPermissioned": false,
+    "hasRecommendations": false,
+    "contributors": [
+      {
+        "name": "TylerMSFT",
+        "url": "https://github.com/TylerMSFT"
+      }
+    ]
+  },
+  "functions": {}
+};;
+	</script>
+
+			<!-- base scripts, msdocs global should be before this -->
+			<script src="/static/assets/0.4.03383.7690-c9b47f95/scripts/ru-ru/index-docs.js"></script>
+			
+
+			<!-- json-ld -->
+			
+		</head>
+	
+			<body
+				id="body"
+				data-bi-name="body"
+				class="layout-body "
+				lang="ru-ru"
+				dir="ltr"
+			>
+				<header class="layout-body-header">
+		<div class="header-holder has-default-focus">
+			
+		<a
+			href="#main"
+			
+			style="z-index: 1070"
+			class="outline-color-text visually-hidden-until-focused position-fixed inner-focus focus-visible top-0 left-0 right-0 padding-xs text-align-center background-color-body"
+			
+		>
+			Пропустить и перейти к основному содержимому
+		</a>
+	
+		<a
+			href="#"
+			data-skip-to-ask-learn
+			style="z-index: 1070"
+			class="outline-color-text visually-hidden-until-focused position-fixed inner-focus focus-visible top-0 left-0 right-0 padding-xs text-align-center background-color-body"
+			hidden
+		>
+			Переход к интерфейсу чата Ask Learn
+		</a>
+	
+
+			<div hidden id="cookie-consent-holder" data-test-id="cookie-consent-container"></div>
+			<!-- Unsupported browser warning -->
+			<div
+				id="unsupported-browser"
+				style="background-color: white; color: black; padding: 16px; border-bottom: 1px solid grey;"
+				hidden
+			>
+				<div style="max-width: 800px; margin: 0 auto;">
+					<p style="font-size: 24px">Этот браузер больше не поддерживается.</p>
+					<p style="font-size: 16px; margin-top: 16px;">
+						Выполните обновление до Microsoft Edge, чтобы воспользоваться новейшими функциями, обновлениями для системы безопасности и технической поддержкой.
+					</p>
+					<div style="margin-top: 12px;">
+						<a
+							href="https://go.microsoft.com/fwlink/p/?LinkID=2092881 "
+							style="background-color: #0078d4; border: 1px solid #0078d4; color: white; padding: 6px 12px; border-radius: 2px; display: inline-block;"
+						>
+							Скачать Microsoft Edge
+						</a>
+						<a
+							href="https://learn.microsoft.com/en-us/lifecycle/faq/internet-explorer-microsoft-edge"
+							style="background-color: white; padding: 6px 12px; border: 1px solid #505050; color: #171717; border-radius: 2px; display: inline-block;"
+						>
+							Дополнительные сведения об Internet Explorer и Microsoft Edge
+						</a>
+					</div>
+				</div>
+			</div>
+			<!-- site header -->
+			<div
+				id="ms--site-header"
+				data-test-id="site-header-wrapper"
+				itemscope="itemscope"
+				itemtype="http://schema.org/Organization"
+			>
+				<div
+					id="ms--mobile-nav"
+					class="site-header display-none-tablet padding-inline-none gap-none"
+					data-bi-name="mobile-header"
+					data-test-id="mobile-header"
+				></div>
+				<div
+					id="ms--primary-nav"
+					class="site-header display-none display-flex-tablet"
+					data-bi-name="L1-header"
+					data-test-id="primary-header"
+				></div>
+				<div
+					id="ms--secondary-nav"
+					class="site-header display-none display-flex-tablet"
+					data-bi-name="L2-header"
+					data-test-id="secondary-header"
+					
+				></div>
+			</div>
+			
+		<!-- banner -->
+		<div data-banner>
+			<div id="disclaimer-holder"></div>
+			
+		</div>
+		<!-- banner end -->
+	
+		</div>
+	</header>
+				 <section
+					id="layout-body-menu"
+					class="layout-body-menu display-flex"
+					data-bi-name="menu"
+			  >
+					
+		<div
+			id="left-container"
+			class="left-container display-none display-block-tablet padding-inline-sm padding-bottom-sm width-full"
+			data-toc-container="true"
+		>
+			<!-- Regular TOC content (default) -->
+			<div id="ms--toc-content" class="height-full">
+				<nav
+					id="affixed-left-container"
+					class="margin-top-sm-tablet position-sticky display-flex flex-direction-column"
+					aria-label="Основной"
+					data-bi-name="left-toc"
+					role="navigation"
+				></nav>
+			</div>
+			<!-- Collapsible TOC content (hidden by default) -->
+			<div id="ms--toc-content-collapsible" class="height-full" hidden>
+				<nav
+					id="affixed-left-container"
+					class="margin-top-sm-tablet position-sticky display-flex flex-direction-column"
+					aria-label="Основной"
+					data-bi-name="left-toc"
+					role="navigation"
+				>
+					<div
+						id="ms--collapsible-toc-header"
+						class="display-flex flex-direction-row-reverse justify-content-space-between align-items-center margin-bottom-xxs"
+					>
+						<button
+							type="button"
+							class="button button-clear inner-focus"
+							data-collapsible-toc-toggle
+							aria-expanded="true"
+							aria-controls="ms--collapsible-toc-content"
+							aria-label="Оглавление"
+						>
+							<span class="icon font-size-xxl" aria-hidden="true">
+								<span class="docon docon-panel-left-contract"></span>
+							</span>
+						</button>
+						<div id="ms--collapsible-toc-moniker-slot" class="flex-grow-1"></div>
+					</div>
+				</nav>
+			</div>
+		</div>
+	
+			  </section>
+
+				<main
+					id="main"
+					role="main"
+					class="layout-body-main "
+					data-bi-name="content"
+					lang="ru-ru"
+					dir="ltr"
+				>
+					
+			<div
+		id="ms--content-header"
+		class="content-header default-focus border-bottom-none"
+		data-bi-name="content-header"
+	>
+		<div class="content-header-controls margin-xxs margin-inline-sm-tablet">
+			<button
+				type="button"
+				class="contents-button button button-sm margin-right-xxs"
+				data-bi-name="contents-expand"
+				aria-haspopup="true"
+				data-contents-button
+			>
+				<span class="icon" aria-hidden="true"><span class="docon docon-menu"></span></span>
+				<span class="contents-expand-title"> Оглавление </span>
+			</button>
+			<button
+				type="button"
+				class="ap-collapse-behavior ap-expanded button button-sm"
+				data-bi-name="ap-collapse"
+				aria-controls="action-panel"
+			>
+				<span class="icon" aria-hidden="true"><span class="docon docon-exit-mode"></span></span>
+				<span>Выйти из режима редактора</span>
+			</button>
+		</div>
+	</div>
+			<div data-main-column class="padding-sm padding-top-none padding-top-sm-tablet">
+				<div>
+					
+		<div id="article-header" class="background-color-body margin-bottom-xs display-none-print">
+			<div class="display-flex align-items-center justify-content-space-between">
+				
+		<details
+			id="article-header-breadcrumbs-overflow-popover"
+			class="popover"
+			data-for="article-header-breadcrumbs"
+		>
+			<summary
+				class="button button-clear button-primary button-sm inner-focus"
+				aria-label="Все элементы навигации"
+			>
+				<span class="icon">
+					<span class="docon docon-more"></span>
+				</span>
+			</summary>
+			<div id="article-header-breadcrumbs-overflow" class="popover-content padding-none"></div>
+		</details>
+
+		<bread-crumbs
+			id="article-header-breadcrumbs"
+			role="group"
+			aria-label="Навигационные цепочки"
+			data-test-id="article-header-breadcrumbs"
+			class="overflow-hidden flex-grow-1 margin-right-sm margin-right-md-tablet margin-right-lg-desktop margin-left-negative-xxs padding-left-xxs"
+		></bread-crumbs>
+	 
+		<div
+			id="article-header-page-actions"
+			class="opacity-none margin-left-auto display-flex flex-wrap-no-wrap align-items-stretch"
+		>
+			
+		<button
+			class="button button-sm border-none inner-focus display-none-tablet flex-shrink-0 "
+			data-bi-name="ask-learn-assistant-entry"
+			data-test-id="ask-learn-assistant-modal-entry-mobile"
+			data-ask-learn-modal-entry
+			
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-label="Спросить Learn"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+		</button>
+		<button
+			class="button button-sm display-none display-inline-flex-tablet display-none-desktop flex-shrink-0 margin-right-xxs border-color-ask-learn "
+			data-bi-name="ask-learn-assistant-entry"
+			
+			data-test-id="ask-learn-assistant-modal-entry-tablet"
+			data-ask-learn-modal-entry
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Спросить Learn</span>
+		</button>
+		<button
+			class="button button-sm display-none flex-shrink-0 display-inline-flex-desktop margin-right-xxs border-color-ask-learn "
+			data-bi-name="ask-learn-assistant-entry"
+			
+			data-test-id="ask-learn-assistant-flyout-entry"
+			data-ask-learn-flyout-entry
+			data-flyout-button="toggle"
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-controls="ask-learn-flyout"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Спросить Learn</span>
+		</button>
+	 
+		<button
+			type="button"
+			id="ms--focus-mode-button"
+			data-focus-mode
+			data-bi-name="focus-mode-entry"
+			class="button button-sm flex-shrink-0 margin-right-xxs display-none display-inline-flex-desktop"
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-glasses"></span>
+			</span>
+			<span>Режим фокусировки</span>
+		</button>
+	 
+
+			<details class="popover popover-right" id="article-header-page-actions-overflow">
+				<summary
+					class="justify-content-flex-start button button-clear button-sm button-primary inner-focus"
+					aria-label="Дополнительные действия"
+					title="Дополнительные действия"
+				>
+					<span class="icon" aria-hidden="true">
+						<span class="docon docon-more-vertical"></span>
+					</span>
+				</summary>
+				<div class="popover-content">
+					
+		<button
+			data-page-action-item="overflow-mobile"
+			type="button"
+			class="button-block button-sm inner-focus button button-clear display-none-tablet justify-content-flex-start text-align-left"
+			data-bi-name="contents-expand"
+			data-contents-button
+			data-popover-close
+		>
+			<span class="icon">
+				<span class="docon docon-editor-list-bullet" aria-hidden="true"></span>
+			</span>
+			<span class="contents-expand-title">Оглавление</span>
+		</button>
+	 
+		<a
+			id="lang-link-overflow"
+			class="button-sm inner-focus button button-clear button-block justify-content-flex-start text-align-left"
+			data-bi-name="language-toggle"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			data-read-in-link
+			href="#"
+			hidden
+		>
+			<span class="icon" aria-hidden="true" data-read-in-link-icon>
+				<span class="docon docon-locale-globe"></span>
+			</span>
+			<span data-read-in-link-text>Прочитать на английском</span>
+		</a>
+	 
+		<button
+			type="button"
+			class="collection button button-clear button-sm button-block justify-content-flex-start text-align-left inner-focus"
+			data-list-type="collection"
+			data-bi-name="collection"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			data-popover-close
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-circle-addition"></span>
+			</span>
+			<span class="collection-status">Добавить</span>
+		</button>
+	
+					
+		<button
+			type="button"
+			class="collection button button-block button-clear button-sm justify-content-flex-start text-align-left inner-focus"
+			data-list-type="plan"
+			data-bi-name="plan"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			data-popover-close
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-circle-addition"></span>
+			</span>
+			<span class="plan-status">Добавить в план</span>
+		</button>
+	  
+					
+		<hr class="margin-block-xxs" />
+		<h4 class="font-size-sm padding-left-xxs">Поделиться через</h4>
+		
+					<a
+						class="button button-clear button-sm inner-focus button-block justify-content-flex-start text-align-left text-decoration-none share-facebook"
+						data-bi-name="facebook"
+						data-page-action-item="overflow-all"
+						href="#"
+					>
+						<span class="icon color-primary" aria-hidden="true">
+							<span class="docon docon-facebook-share"></span>
+						</span>
+						<span>Facebook</span>
+					</a>
+
+					<a
+						href="#"
+						class="button button-clear button-sm inner-focus button-block justify-content-flex-start text-align-left text-decoration-none share-twitter"
+						data-bi-name="twitter"
+						data-page-action-item="overflow-all"
+					>
+						<span class="icon color-text" aria-hidden="true">
+							<span class="docon docon-xlogo-share"></span>
+						</span>
+						<span>x.com</span>
+					</a>
+
+					<a
+						href="#"
+						class="button button-clear button-sm inner-focus button-block justify-content-flex-start text-align-left text-decoration-none share-linkedin"
+						data-bi-name="linkedin"
+						data-page-action-item="overflow-all"
+					>
+						<span class="icon color-primary" aria-hidden="true">
+							<span class="docon docon-linked-in-logo"></span>
+						</span>
+						<span>LinkedIn</span>
+					</a>
+					<a
+						href="#"
+						class="button button-clear button-sm inner-focus button-block justify-content-flex-start text-align-left text-decoration-none share-email"
+						data-bi-name="email"
+						data-page-action-item="overflow-all"
+					>
+						<span class="icon color-primary" aria-hidden="true">
+							<span class="docon docon-mail-message"></span>
+						</span>
+						<span>Адрес электронной почты</span>
+					</a>
+			  
+	 
+		<hr class="margin-block-xxs" />
+		
+				<button
+					class="button button-block button-clear button-sm justify-content-flex-start text-align-left inner-focus"
+					type="button"
+					data-bi-name="copy-markdown"
+					data-page-action-item="overflow-all"
+					data-copy-markdown
+					data-copy-state="idle"
+					data-check-hidden="true"
+				>
+					<span class="icon color-primary" aria-hidden="true">
+						<span data-show-when="idle" class="docon docon-code-lang"></span>
+						<span data-show-when="loading" class="loader" hidden></span>
+						<span data-show-when="success" class="docon docon-check-mark" hidden></span>
+					</span>
+					<span>Копировать Markdown</span>
+				</button>
+		   
+				<button
+					class="button button-block button-clear button-sm justify-content-flex-start text-align-left inner-focus"
+					type="button"
+					data-bi-name="print"
+					data-page-action-item="overflow-all"
+					data-popover-close
+					data-print-page
+					data-check-hidden="true"
+				>
+					<span class="icon color-primary" aria-hidden="true">
+						<span class="docon docon-print"></span>
+					</span>
+					<span>Печать</span>
+				</button>
+		  
+	
+				</div>
+			</details>
+		</div>
+	
+			</div>
+		</div>
+	  
+		<!-- privateUnauthorizedTemplate is hidden by default -->
+		<div unauthorized-private-section data-bi-name="permission-content-unauthorized-private" hidden>
+			<hr class="hr margin-top-xs margin-bottom-sm" />
+			<div class="notification notification-info">
+				<div class="notification-content">
+					<p class="margin-top-none notification-title">
+						<span class="icon">
+							<span class="docon docon-exclamation-circle-solid" aria-hidden="true"></span>
+						</span>
+						<span>Примечание.</span>
+					</p>
+					<p class="margin-top-none authentication-determined not-authenticated">
+						Для доступа к этой странице требуется авторизация. Вы можете попробовать <a class="docs-sign-in" href="#" data-bi-name="permission-content-sign-in">войти</a> или <a  class="docs-change-directory" data-bi-name="permisson-content-change-directory">изменить каталоги</a>.
+					</p>
+					<p class="margin-top-none authentication-determined authenticated">
+						Для доступа к этой странице требуется авторизация. Вы можете <a class="docs-change-directory" data-bi-name="permisson-content-change-directory">попробовать изменить каталоги</a>.
+					</p>
+				</div>
+			</div>
+		</div>
+	
+					<div class="content"><h1 id="c-amp-overview">Обзор C++ AMP</h1></div>
+					
+		<div
+			id="article-metadata"
+			data-bi-name="article-metadata"
+			data-test-id="article-metadata"
+			class="page-metadata-container display-flex gap-xxs justify-content-space-between align-items-center flex-wrap-wrap"
+		>
+			 
+				<div
+					id="user-feedback"
+					class="margin-block-xxs display-none display-none-print"
+					hidden
+					data-hide-on-archived
+				>
+					
+		<button
+			id="user-feedback-button"
+			data-test-id="conceptual-feedback-button"
+			class="button button-sm button-clear button-primary display-none"
+			type="button"
+			data-bi-name="user-feedback-button"
+			data-user-feedback-button
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-like"></span>
+			</span>
+			<span>Обратная связь</span>
+		</button>
+	
+				</div>
+		  
+		</div>
+	  
+		<nav
+			id="center-doc-outline"
+			class="doc-outline is-hidden-desktop display-none-print margin-bottom-sm"
+			data-bi-name="intopic toc"
+			aria-label="В этой статье"
+		>
+			<h2 id="ms--in-this-article" class="title is-6 margin-block-xs">
+				В этой статье
+			</h2>
+		</nav>
+	
+					<div class="content"><div class="NOTE">
+<p>Замечание</p>
+<p>Заголовки C++ AMP устарели начиная с Visual Studio 2022 версии 17.0.
+Включение любых заголовков AMP приведет к возникновению ошибок сборки. Определите <code>_SILENCE_AMP_DEPRECATION_WARNINGS</code> перед включением всех заголовков AMP, чтобы подавить предупреждения.</p>
+</div>
+<p>Ускорение массивного параллелизма C++ (C++ AMP) ускоряет выполнение кода C++ за счёт использования аппаратного обеспечения для параллельной обработки данных, такого как графический процессор (GPU) на дискретной графической карте. С помощью C++ AMP можно кодировать многомерные алгоритмы данных, чтобы ускорить выполнение с помощью параллелизма на разнородном оборудовании. Модель программирования C++ AMP включает многомерные массивы, индексирование, передачу памяти, плитку и библиотеку математических функций. Расширения языка C++ AMP можно использовать для управления перемещением данных с ЦП на GPU и обратно, чтобы повысить производительность.</p>
+<h2 id="system-requirements">Требования к системе</h2>
+<ul>
+<li><p>Windows&nbsp;7 или более поздней версии.</p>
+</li>
+<li><p>Windows Server 2008 R2 до Visual Studio 2019.</p>
+</li>
+<li><p>Оборудование DirectX 11 уровня возможностей 11.0 или более поздней версии</p>
+</li>
+<li><p>Для отладки в эмуляторе программного обеспечения требуется Windows 8 или Windows Server 2012. Для отладки на оборудовании необходимо установить драйверы для графической карты. Дополнительные сведения см. в разделе <a href="/ru-ru/visualstudio/debugger/debugging-gpu-code" data-linktype="absolute-path">Отладка кода GPU</a>.</p>
+</li>
+<li><p>Примечание. AMP в настоящее время не поддерживается в ARM64.</p>
+</li>
+</ul>
+<h2 id="introduction">Введение</h2>
+<p>В следующих двух примерах показаны основные компоненты C++ AMP. Предположим, что необходимо добавить соответствующие элементы двухмерных массивов. Например, может потребоваться добавить <code>{1, 2, 3, 4, 5}</code> и <code>{6, 7, 8, 9, 10}</code> получить <code>{7, 9, 11, 13, 15}</code>. Без использования C++ AMP можно написать следующий код, чтобы добавить числа и отобразить результаты.</p>
+<pre><code class="lang-cpp">#include &lt;iostream&gt;
+
+void StandardMethod() {
+
+    int aCPP[] = {1, 2, 3, 4, 5};
+    int bCPP[] = {6, 7, 8, 9, 10};
+    int sumCPP[5];
+
+    for (int idx = 0; idx &lt; 5; idx++)
+    {
+        sumCPP[idx] = aCPP[idx] + bCPP[idx];
+    }
+
+    for (int idx = 0; idx &lt; 5; idx++)
+    {
+        std::cout &lt;&lt; sumCPP[idx] &lt;&lt; "\n";
+    }
+}
+</code></pre>
+<p>Ниже приведены важные части кода.</p>
+<ul>
+<li><p>Данные: данные состоят из трех массивов. Все имеют одинаковый ранг (один) и длину (пять).</p>
+</li>
+<li><p>Итерация: первый <strong><code>for</code></strong> цикл предоставляет механизм для итерации элементов в массивах. Код, который требуется выполнить для вычисления сумм, содержится в первом <strong><code>for</code></strong> блоке.</p>
+</li>
+<li><p>Индекс. Переменная <code>idx</code> обращается к отдельным элементам массивов.</p>
+</li>
+</ul>
+<p>Используя C++ AMP, вместо этого можно написать следующий код.</p>
+<pre><code class="lang-cpp">#include &lt;amp.h&gt;
+#include &lt;iostream&gt;
+using namespace concurrency;
+
+const int size = 5;
+
+void CppAmpMethod() {
+    int aCPP[] = {1, 2, 3, 4, 5};
+    int bCPP[] = {6, 7, 8, 9, 10};
+    int sumCPP[size];
+
+    // Create C++ AMP objects.
+    array_view&lt;const int, 1&gt; a(size, aCPP);
+    array_view&lt;const int, 1&gt; b(size, bCPP);
+    array_view&lt;int, 1&gt; sum(size, sumCPP);
+    sum.discard_data();
+
+    parallel_for_each(
+        // Define the compute domain, which is the set of threads that are created.
+        sum.extent,
+        // Define the code to run on each thread on the accelerator.
+        [=](index&lt;1&gt; idx) restrict(amp) {
+            sum[idx] = a[idx] + b[idx];
+        }
+    );
+
+    // Print the results. The expected output is "7, 9, 11, 13, 15".
+    for (int i = 0; i &lt; size; i++) {
+        std::cout &lt;&lt; sum[i] &lt;&lt; "\n";
+    }
+}
+</code></pre>
+<p>Те же основные элементы присутствуют, но используются конструкции C++ AMP:</p>
+<ul>
+<li><p>Данные: вы используете массивы C++ для создания трех объектов C++ AMP <a href="reference/array-view-class?view=msvc-160" data-linktype="relative-path">array_view</a>. Для создания <code>array_view</code> объекта предоставляются четыре значения: значения данных, ранг, тип элемента и длина <code>array_view</code> объекта в каждом измерении. Ранг и тип передаются в качестве параметров типа. Данные и длина передаются в качестве параметров конструктора. В этом примере массив C++, передаваемый конструктору, является одномерным. Ранг и длина используются для создания прямоугольной формы данных в объекте <code>array_view</code> , а значения данных используются для заполнения массива. Библиотека среды выполнения также включает <a href="reference/array-class?view=msvc-160" data-linktype="relative-path">класс массива</a>, который имеет интерфейс, который напоминает <code>array_view</code> класс и рассматривается далее в этой статье.</p>
+</li>
+<li><p>Итерация: <a href="reference/concurrency-namespace-functions-amp?view=msvc-160#parallel_for_each" data-linktype="relative-path">функция parallel_for_each (C++ AMP)</a> предоставляет механизм для итерации элементов данных или <em>вычислительного домена</em>. В этом примере вычислительный домен задается с помощью <code>sum.extent</code>. Код, который требуется выполнить, содержится в лямбда-выражении или <em>функции ядра</em>. Указывает <code>restrict(amp)</code>, что используется только та часть языка C++, которую может ускорить C++ AMP.</p>
+</li>
+<li><p>Индекс: переменная <a href="reference/index-class?view=msvc-160" data-linktype="relative-path">класса индекса</a> , <code>idx</code>объявляется с рангом одного для сопоставления ранга <code>array_view</code> объекта. Используя индекс, вы можете получить доступ к отдельным элементам <code>array_view</code> объектов.</p>
+</li>
+</ul>
+<h2 id="shaping-and-indexing-data-index-and-extent">Формирование и индексирование данных: индекс и размер</h2>
+<p>Перед запуском кода ядра необходимо определить значения данных и объявить форму данных. Все данные определяются как массив (прямоугольный), и можно определить массив для любого ранга (число измерений). Данные могут иметь любой размер в любом из измерений.</p>
+<h3 id="index-class">Класс index</h3>
+<p>
+              <a href="reference/index-class?view=msvc-160" data-linktype="relative-path">Класс индекса</a> указывает расположение в <code>array</code> объекте или <code>array_view</code> объекте, инкапсулируя смещение от источника в каждом измерении в один объект. При доступе к позиции в массиве объект передаётся оператору индексирования <code>index</code>, вместо списка целых индексов <code>[]</code>. Доступ к элементам в каждом измерении можно получить с помощью <a href="reference/array-class?view=msvc-160#operator_call" data-linktype="relative-path">оператора array::operator() или оператора</a><a href="reference/array-view-class?view=msvc-160#operator_call" data-linktype="relative-path">array_view::operator().</a></p>
+<p>В следующем примере создается одномерный индекс, указывающий третий элемент в одномерном <code>array_view</code> объекте. Индекс используется для печати третьего элемента в объекте <code>array_view</code> . Выходные данные — 3.</p>
+<pre><code class="lang-cpp">int aCPP[] = {1, 2, 3, 4, 5};
+array_view&lt;int, 1&gt; a(5, aCPP);
+
+index&lt;1&gt; idx(2);
+
+std::cout &lt;&lt; a[idx] &lt;&lt; "\n";
+// Output: 3
+</code></pre>
+<p>В следующем примере создается двухмерный индекс, указывающий элемент, в котором строка = 1 и столбец = 2 в двухмерном <code>array_view</code> объекте. Первый параметр в конструкторе <code>index</code> — это компонент строки, а второй параметр — компонент столбца. Выходные данные — 6.</p>
+<pre><code class="lang-cpp">int aCPP[] = {1, 2, 3, 4, 5, 6};
+array_view&lt;int, 2&gt; a(2, 3, aCPP);
+
+index&lt;2&gt; idx(1, 2);
+
+std::cout &lt;&lt;a[idx] &lt;&lt; "\n";
+// Output: 6
+</code></pre>
+<p>В следующем примере создается трехмерный индекс, указывающий элемент, в котором глубина = 0, строка = 1 и столбец = 3 в трехмерном <code>array_view</code> объекте. Обратите внимание, что первый параметр является компонентом глубины, второй параметр является компонентом строки, а третий параметр — компонент столбца. Выходные данные — 8.</p>
+<pre><code class="lang-cpp">int aCPP[] = {
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+
+array_view&lt;int, 3&gt; a(2, 3, 4, aCPP);
+
+// Specifies the element at 3, 1, 0.
+index&lt;3&gt; idx(0, 1, 3);
+
+std::cout &lt;&lt; a[idx] &lt;&lt; "\n";
+// Output: 8
+</code></pre>
+<h3 id="extent-class">Класс экстент</h3>
+<p>
+              <a href="reference/extent-class?view=msvc-160" data-linktype="relative-path">Класс экстентов</a> указывает длину данных в каждом измерении <code>array</code> объекта или <code>array_view</code> объекта. Вы можете создать экстент и использовать его для создания <code>array</code> или <code>array_view</code> объекта. Можно также определить размер существующего <code>array</code> или <code>array_view</code> объекта. В следующем примере выводится длина объёма в каждом измерении объекта <code>array_view</code>.</p>
+<pre><code class="lang-cpp">int aCPP[] = {
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+// There are 3 rows and 4 columns, and the depth is two.
+array_view&lt;int, 3&gt; a(2, 3, 4, aCPP);
+
+std::cout &lt;&lt; "The number of columns is " &lt;&lt; a.extent[2] &lt;&lt; "\n";
+std::cout &lt;&lt; "The number of rows is " &lt;&lt; a.extent[1] &lt;&lt; "\n";
+std::cout &lt;&lt; "The depth is " &lt;&lt; a.extent[0] &lt;&lt; "\n";
+std::cout &lt;&lt; "Length in most significant dimension is " &lt;&lt; a.extent[0] &lt;&lt; "\n";
+</code></pre>
+<p>В следующем примере создается <code>array_view</code> объект, имеющий те же измерения, что и объект в предыдущем примере, но этот пример использует <code>extent</code> объект вместо использования явных параметров в конструкторе <code>array_view</code> .</p>
+<pre><code class="lang-cpp">int aCPP[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
+extent&lt;3&gt; e(2, 3, 4);
+
+array_view&lt;int, 3&gt; a(e, aCPP);
+
+std::cout &lt;&lt; "The number of columns is " &lt;&lt; a.extent[2] &lt;&lt; "\n";
+std::cout &lt;&lt; "The number of rows is " &lt;&lt; a.extent[1] &lt;&lt; "\n";
+std::cout &lt;&lt; "The depth is " &lt;&lt; a.extent[0] &lt;&lt; "\n";
+</code></pre>
+<h2 id="moving-data-to-the-accelerator-array-and-array_view">Перемещение данных на акселератор: массив и представление_массива</h2>
+<p>Два контейнера данных, используемые для перемещения данных в акселератор, определяются в библиотеке среды выполнения. Они являются <a href="reference/array-class?view=msvc-160" data-linktype="relative-path">классом массива</a> и <a href="reference/array-view-class?view=msvc-160" data-linktype="relative-path">классом array_view</a>. Класс <code>array</code> — это класс контейнера, который создает глубокую копию данных при создании объекта. Класс <code>array_view</code> является классом-оболочкой, который копирует данные, когда функция ядра обращается к данным. Когда данные необходимы на исходном устройстве, данные копируются обратно.</p>
+<h3 id="array-class">Класс array</h3>
+<p>
+              <code>array</code> При построении объекта на акселераторе создается глубокая копия данных, если используется конструктор, содержащий указатель на набор данных. Функция ядра изменяет копию на ускорителе. После завершения выполнения функции ядра необходимо скопировать данные обратно в структуру исходных данных. В следующем примере каждый элемент в векторе умножается на 10. После завершения функции ядра <code>vector conversion operator</code> используется для копирования данных обратно в объект вектора.</p>
+<pre><code class="lang-cpp">std::vector&lt;int&gt; data(5);
+
+for (int count = 0; count &lt;5; count++)
+{
+    data[count] = count;
+}
+
+array&lt;int, 1&gt; a(5, data.begin(), data.end());
+
+parallel_for_each(
+    a.extent,
+    [=, &amp;a](index&lt;1&gt; idx) restrict(amp) {
+        a[idx] = a[idx]* 10;
+    });
+
+data = a;
+for (int i = 0; i &lt; 5; i++)
+{
+    std::cout &lt;&lt; data[i] &lt;&lt; "\n";
+}
+</code></pre>
+<h3 id="array_view-class">Класс array_view</h3>
+<p>Имеет почти те же члены, как класс <code>array_view</code>, но базовое поведение не совпадает. Данные, передаваемые <code>array_view</code> конструктору, не реплицируются на GPU, так как это происходит с конструктором <code>array</code> . Вместо этого данные копируются в акселератор при выполнении функции ядра. Поэтому, если вы создаете два <code>array_view</code> объекта, использующих те же данные, оба <code>array_view</code> объекта ссылаются на одно и то же пространство памяти. При этом необходимо синхронизировать любой многопоточный доступ. Основное преимущество использования <code>array_view</code> класса заключается в том, что данные перемещаются только в том случае, если это необходимо.</p>
+<h3 id="comparison-of-array-and-array_view">Сравнение массива и array_view</h3>
+<p>В следующей таблице приводится сводка сходств и различий между классами <code>array</code> и <code>array_view</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Описание</th>
+<th>Класс массива</th>
+<th>класс array_view</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>При определении ранга</td>
+<td>Во время компиляции.</td>
+<td>Во время компиляции.</td>
+</tr>
+<tr>
+<td>Когда определяется область</td>
+<td>Во время выполнения.</td>
+<td>Во время выполнения.</td>
+</tr>
+<tr>
+<td>Форма</td>
+<td>Прямоугольный.</td>
+<td>Прямоугольный.</td>
+</tr>
+<tr>
+<td>Хранение данных</td>
+<td>Контейнер данных.</td>
+<td>Является оболочкой данных.</td>
+</tr>
+<tr>
+<td>Копия</td>
+<td>Явное и глубокое копирование при определении.</td>
+<td>Неявное копирование при доступе к функции ядра.</td>
+</tr>
+<tr>
+<td>Извлечение данных</td>
+<td>Путем копирования данных массива обратно в объект на поток ЦП.</td>
+<td>Путем прямого доступа к <code>array_view</code> объекту или путем вызова <a href="reference/array-view-class?view=msvc-160#synchronize" data-linktype="relative-path">метода array_view::synchronize</a> для продолжения доступа к данным в исходном контейнере.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="shared-memory-with-array-and-array_view">Общая память с массивом и array_view</h3>
+<p>Общая память — это память, доступ к которой осуществляется как ЦП, так и акселератором. Использование общей памяти устраняет или значительно сокращает затраты на копирование данных между ЦП и акселератором. Хотя память предоставляется совместно, доступ к ней не может одновременно выполняться как ЦП, так и акселератором, и это приводит к неопределенному поведению.</p>
+<p>
+              <code>array</code> Объекты можно использовать для указания точного управления использованием общей памяти, если связанный акселератор поддерживает его. Определяется ли ускоритель поддерживает общую память, свойством <a href="reference/accelerator-class?view=msvc-160#supports_cpu_shared_memory" data-linktype="relative-path">supports_cpu_shared_memory</a> акселератора, которое возвращает <strong><code>true</code></strong>, когда поддержка общей памяти имеется. Если поддерживается разделяемая память, по умолчанию перечисление access_type для выделения памяти на акселераторе определяется свойством <a href="reference/concurrency-namespace-enums-amp?view=msvc-160#access_type" data-linktype="relative-path"></a>. По умолчанию объекты <code>array</code> и <code>array_view</code> принимают тот же <code>access_type</code> что и основной связанный <code>accelerator</code>.</p>
+<p>Явно задав свойство <a href="reference/array-class?view=msvc-160#cpu_access_type" data-linktype="relative-path"></a><code>array</code>, вы можете осуществлять точный контроль над использованием общей памяти, чтобы оптимизировать приложение с учётом характеристик производительности оборудования в зависимости от шаблонов доступа к памяти вычислительных ядер. Выражение <code>array_view</code> отражает то же <code>cpu_access_type</code>, что и <code>array</code>, с которым оно связано; или, если array_view создается без источника данных, его <code>access_type</code> отражает среду, которая сначала вызывает выделение хранилища. То есть, если сначала к узлу (ЦП) обращаются, он ведет себя так, как если бы был создан на источнике данных ЦП и разделяет <code>access_type</code> и <code>accelerator_view</code>, связанные с захватом. Однако если сначала к нему обращаются с помощью <code>accelerator_view</code>, то он ведет себя так, как если бы был создан на <code>array</code>, сделанном на этом <code>accelerator_view</code>, и разделяет <code>array</code><code>access_type</code>.</p>
+<p>В следующем примере кода показано, как определить, поддерживает ли акселератор по умолчанию общую память, а затем создает несколько массивов с разными конфигурациями cpu_access_type.</p>
+<pre><code class="lang-cpp">#include &lt;amp.h&gt;
+#include &lt;iostream&gt;
+
+using namespace Concurrency;
+
+int main()
+{
+    accelerator acc = accelerator(accelerator::default_accelerator);
+
+    // Early out if the default accelerator doesn't support shared memory.
+    if (!acc.supports_cpu_shared_memory)
+    {
+        std::cout &lt;&lt; "The default accelerator does not support shared memory" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    // Override the default CPU access type.
+    acc.default_cpu_access_type = access_type_read_write
+
+    // Create an accelerator_view from the default accelerator. The
+    // accelerator_view inherits its default_cpu_access_type from acc.
+    accelerator_view acc_v = acc.default_view;
+
+    // Create an extent object to size the arrays.
+    extent&lt;1&gt; ex(10);
+
+    // Input array that can be written on the CPU.
+    array&lt;int, 1&gt; arr_w(ex, acc_v, access_type_write);
+
+    // Output array that can be read on the CPU.
+    array&lt;int, 1&gt; arr_r(ex, acc_v, access_type_read);
+
+    // Read-write array that can be both written to and read from on the CPU.
+    array&lt;int, 1&gt; arr_rw(ex, acc_v, access_type_read_write);
+}
+</code></pre>
+<h2 id="executing-code-over-data-parallel_for_each">Выполнение кода над данными: parallel_for_each</h2>
+<p>Функция <a href="reference/concurrency-namespace-functions-amp?view=msvc-160#parallel_for_each" data-linktype="relative-path">parallel_for_each</a> указывает код, который требуется запустить на акселераторе для данных в <code>array</code> или <code>array_view</code> объекте. Рассмотрим следующий код из введения этого раздела.</p>
+<pre><code class="lang-cpp">#include &lt;amp.h&gt;
+#include &lt;iostream&gt;
+using namespace concurrency;
+
+void AddArrays() {
+    int aCPP[] = {1, 2, 3, 4, 5};
+    int bCPP[] = {6, 7, 8, 9, 10};
+    int sumCPP[5] = {0, 0, 0, 0, 0};
+
+    array_view&lt;int, 1&gt; a(5, aCPP);
+    array_view&lt;int, 1&gt; b(5, bCPP);
+    array_view&lt;int, 1&gt; sum(5, sumCPP);
+
+    parallel_for_each(
+        sum.extent,
+        [=](index&lt;1&gt; idx) restrict(amp)
+        {
+            sum[idx] = a[idx] + b[idx];
+        }
+    );
+
+    for (int i = 0; i &lt; 5; i++) {
+        std::cout &lt;&lt; sum[i] &lt;&lt; "\n";
+    }
+}
+</code></pre>
+<p>Метод <code>parallel_for_each</code> принимает два аргумента, вычислительный домен и лямбда-выражение.</p>
+<p>Домен <em>вычислений</em> — это <code>extent</code> объект или <code>tiled_extent</code> объект, определяющий набор потоков для создания для параллельного выполнения. Для каждого элемента в вычислительном домене создается один поток. В этом случае <code>extent</code> объект является одномерным и имеет пять элементов. Поэтому запускаются пять потоков.</p>
+<p>
+              <em>Лямбда-выражение</em> определяет код для выполнения в каждом потоке. Предложение захвата <code>[=]</code>указывает, что текст лямбда-выражения обращается ко всем захваченным переменным по значению, которые в данном случае являются <code>a</code>, <code>b</code>и <code>sum</code>. В этом примере список параметров создает одномерную переменную <code>index</code> с именем <code>idx</code>. Значение <code>idx[0]</code> равно 0 в первом потоке и увеличивается на один в каждом последующем потоке. Указывает <code>restrict(amp)</code>, что используется только та часть языка C++, которую может ускорить C++ AMP.  Ограничения функций с модификатором ограничения описаны в <a href="../../cpp/restrict-cpp-amp?view=msvc-160" data-linktype="relative-path">разделе "Ограничение" (C++ AMP).</a> Дополнительные сведения см. в описании <a href="../../cpp/lambda-expression-syntax?view=msvc-160" data-linktype="relative-path">синтаксиса лямбда-выражения</a>.</p>
+<p>Лямбда-выражение может включать код для выполнения или вызвать отдельную функцию ядра. Функция ядра должна включать <code>restrict(amp)</code> модификатор. Следующий пример эквивалентен предыдущему примеру, но вызывает отдельную функцию ядра.</p>
+<pre><code class="lang-cpp">#include &lt;amp.h&gt;
+#include &lt;iostream&gt;
+using namespace concurrency;
+
+void AddElements(
+    index&lt;1&gt; idx,
+    array_view&lt;int, 1&gt; sum,
+    array_view&lt;int, 1&gt; a,
+    array_view&lt;int, 1&gt; b) restrict(amp) {
+    sum[idx] = a[idx] + b[idx];
+}
+
+void AddArraysWithFunction() {
+
+    int aCPP[] = {1, 2, 3, 4, 5};
+    int bCPP[] = {6, 7, 8, 9, 10};
+    int sumCPP[5] = {0, 0, 0, 0, 0};
+
+    array_view&lt;int, 1&gt; a(5, aCPP);
+    array_view&lt;int, 1&gt; b(5, bCPP);
+    array_view&lt;int, 1&gt; sum(5, sumCPP);
+
+    parallel_for_each(
+        sum.extent,
+        [=](index&lt;1&gt; idx) restrict(amp) {
+            AddElements(idx, sum, a, b);
+        }
+    );
+
+    for (int i = 0; i &lt; 5; i++) {
+        std::cout &lt;&lt; sum[i] &lt;&lt; "\n";
+    }
+}
+</code></pre>
+<h2 id="accelerating-code-tiles-and-barriers">Ускорение кода: плитки и барьеры</h2>
+<p>Вы можете получить дополнительное ускорение с помощью тайлинга. Плитка делит потоки на равные прямоугольные подмножества или <em>плитки</em>. Вы определяете соответствующий размер плитки на основе набора данных и алгоритма, который вы кодируют. Для каждого потока у вас есть доступ к <em>глобальному</em> расположению элемента данных относительно всего <code>array</code> или <code>array_view</code>, а также к <em>локальному</em> расположению относительно плитки. Использование локального значения индекса упрощает код, так как вам не нужно писать код для перевода значений индексов из глобального в локальный. Чтобы использовать тайлинг, вызовите <a href="reference/extent-class?view=msvc-160#tile" data-linktype="relative-path">метод extent::tile</a> на вычислительном домене в методе <code>parallel_for_each</code>, и используйте объект <a href="reference/tiled-index-class?view=msvc-160" data-linktype="relative-path">tiled_index</a> в лямбда-выражении.</p>
+<p>В типичных приложениях элементы в плитке связаны каким-то образом, и код должен получить доступ к значениям и отслеживать значения на плитке. Для этого используйте ключевое слово <a href="../../cpp/tile-static-keyword?view=msvc-160" data-linktype="relative-path">tile_static</a> и <a href="reference/tile-barrier-class?view=msvc-160#wait" data-linktype="relative-path">метод tile_barrier::wait</a>. Переменная с ключевым словом <strong>tile_static</strong> имеет область действия по всей плитке, и для каждой плитки создается экземпляр переменной. Необходимо управлять синхронизацией доступа потока и плитки к переменной. 
+              <a href="reference/tile-barrier-class?view=msvc-160#wait" data-linktype="relative-path">Метод tile_barrier::wait</a> останавливает выполнение текущего потока, пока все потоки в плитке не достигли вызова<code>tile_barrier::wait</code>. Таким образом, можно накапливать значения по плитке с помощью <strong>tile_static</strong> переменных. Затем можно завершить любые вычисления, требующие доступа ко всем значениям.</p>
+<p>На следующей схеме представлен двухмерный массив данных выборки, расположенный на плитках.</p>
+<p>
+              <img src="media/camptiledgridexample.png?view=msvc-160" alt="Значения индекса в плиточной области." title="Значения индекса в плиточной области" data-linktype="relative-path">
+              
+            </p>
+<p>В следующем примере кода используются данные выборки из предыдущей схемы. Код заменяет каждое значение на плитке средним значением в плитке.</p>
+<pre><code class="lang-cpp">// Sample data:
+int sampledata[] = {
+    2, 2, 9, 7, 1, 4,
+    4, 4, 8, 8, 3, 4,
+    1, 5, 1, 2, 5, 2,
+    6, 8, 3, 2, 7, 2};
+
+// The tiles:
+// 2 2    9 7    1 4
+// 4 4    8 8    3 4
+//
+// 1 5    1 2    5 2
+// 6 8    3 2    7 2
+
+// Averages:
+int averagedata[] = {
+    0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0,
+};
+
+array_view&lt;int, 2&gt; sample(4, 6, sampledata);
+
+array_view&lt;int, 2&gt; average(4, 6, averagedata);
+
+parallel_for_each(
+    // Create threads for sample.extent and divide the extent into 2 x 2 tiles.
+    sample.extent.tile&lt;2,2&gt;(),
+        [=](tiled_index&lt;2,2&gt; idx) restrict(amp) {
+        // Create a 2 x 2 array to hold the values in this tile.
+        tile_static int nums[2][2];
+
+        // Copy the values for the tile into the 2 x 2 array.
+        nums[idx.local[1]][idx.local[0]] = sample[idx.global];
+
+        // When all the threads have executed and the 2 x 2 array is complete, find the average.
+        idx.barrier.wait();
+        int sum = nums[0][0] + nums[0][1] + nums[1][0] + nums[1][1];
+
+        // Copy the average into the array_view.
+        average[idx.global] = sum / 4;
+    });
+
+for (int i = 0; i &lt;4; i++) {
+    for (int j = 0; j &lt;6; j++) {
+        std::cout &lt;&lt; average(i,j) &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; "\n";
+}
+
+// Output:
+// 3 3 8 8 3 3
+// 3 3 8 8 3 3
+// 5 5 2 2 4 4
+// 5 5 2 2 4 4
+</code></pre>
+<h2 id="math-libraries">Математические библиотеки</h2>
+<p>C++ AMP включает две математические библиотеки. Библиотека двойной точности в <a href="reference/concurrency-precise-math-namespace?view=msvc-160" data-linktype="relative-path">пространстве имен Concurrency::precise_math</a> поддерживает функции с двойной точностью. Она также обеспечивает поддержку функций с одинарной точностью, хотя поддержка двойной точности со стороны оборудования по-прежнему необходима. Он соответствует <a href="https://go.microsoft.com/fwlink/p/?linkid=225887" data-linktype="external">спецификации C99 (ISO/IEC 9899).</a> Акселератор должен поддерживать полную двойную точность. Вы можете определить, выполняется ли это, проверяя значение элемента данных <a href="reference/accelerator-class?view=msvc-160#supports_double_precision" data-linktype="relative-path">акселератора::supports_double_precision</a>. Быстрая математическая библиотека в <a href="reference/concurrency-fast-math-namespace?view=msvc-160" data-linktype="relative-path">пространстве имен Concurrency::fast_math</a> содержит другой набор математических функций. Эти функции, поддерживающие только <strong><code>float</code></strong> операнды, выполняются быстрее, но не так точны, как в библиотеке математики двойной точности. Функции содержатся в файле заголовка &lt;amp_math.h&gt; , и все они объявляются с <code>restrict(amp)</code>. Функции в &lt;заголовочном файле cmath&gt; импортируются в оба пространства имен: <code>fast_math</code> и <code>precise_math</code>. Ключевое <strong><code>restrict</code></strong> слово используется для различения &lt;версии cmath&gt; и версии C++ AMP. Следующий код вычисляет логарифм base-10, используя быстрый метод каждого значения, которое находится в вычислительном домене.</p>
+<pre><code class="lang-cpp">#include &lt;amp.h&gt;
+#include &lt;amp_math.h&gt;
+#include &lt;iostream&gt;
+using namespace concurrency;
+
+void MathExample() {
+
+    double numbers[] = { 1.0, 10.0, 60.0, 100.0, 600.0, 1000.0 };
+    array_view&lt;double, 1&gt; logs(6, numbers);
+
+    parallel_for_each(
+        logs.extent,
+        [=] (index&lt;1&gt; idx) restrict(amp) {
+            logs[idx] = concurrency::fast_math::log10(numbers[idx]);
+        }
+    );
+
+    for (int i = 0; i &lt; 6; i++) {
+        std::cout &lt;&lt; logs[i] &lt;&lt; "\n";
+    }
+}
+</code></pre>
+<h2 id="graphics-library">Библиотека графики</h2>
+<p>C++ AMP включает в себя графическую библиотеку, предназначенную для ускорения графического программирования. Эта библиотека используется только на устройствах, поддерживающих собственные графические функции. Методы находятся в <a href="reference/concurrency-graphics-namespace?view=msvc-160" data-linktype="relative-path">пространстве имен Concurrency::graphics</a> и содержатся в &lt;заголовочном файле amp_graphics.h&gt;. Ключевыми компонентами графической библиотеки являются:</p>
+<ul>
+<li><p>
+              <a href="reference/texture-class?view=msvc-160" data-linktype="relative-path">Класс текстуры. Класс текстуры</a> можно использовать для создания текстур из памяти или из файла. Текстуры похожи на массивы, так как они содержат данные, и они похожи на контейнеры в стандартной библиотеке C++ в отношении назначения и копирования конструкции. Дополнительные сведения см. в разделе <a href="../../standard-library/stl-containers?view=msvc-160" data-linktype="relative-path">"Стандартные контейнеры библиотеки C++</a>". Параметры шаблона для <code>texture</code> класса — это тип элемента и ранг. Ранг может быть 1, 2 или 3. Тип элемента может быть одним из типов коротких векторов, описанных далее в этой статье.</p>
+</li>
+<li><p>
+              <a href="reference/writeonly-texture-view-class?view=msvc-160" data-linktype="relative-path">класс writeonly_texture_view</a>: предоставляет доступ только для записи к любой текстуре.</p>
+</li>
+<li><p>Библиотека коротких векторов: определяет набор типов коротких векторов длины 2, 3 и 4, основанных на <strong><code>int</code></strong>, <code>uint</code>, <strong><code>float</code></strong>, <strong><code>double</code></strong>, <a href="reference/norm-class?view=msvc-160" data-linktype="relative-path">норме</a> или <a href="reference/unorm-class?view=msvc-160" data-linktype="relative-path">ненорме</a>.</p>
+</li>
+</ul>
+<h2 id="universal-windows-platform-uwp-apps">Приложения универсальной платформы Windows (UWP)</h2>
+<p>Как и другие библиотеки C++, вы можете использовать C++ AMP в приложениях UWP. В этих статьях описывается, как включить код C++ AMP в приложения, созданные с помощью C++, C#, Visual Basic или JavaScript:</p>
+<ul>
+<li><p>
+              <a href="using-cpp-amp-in-windows-store-apps?view=msvc-160" data-linktype="relative-path">Использование C++&nbsp;AMP в приложениях&nbsp;UWP</a></p>
+</li>
+<li><p>
+              <a href="/ru-ru/previous-versions/windows/apps/hh755833(v=vs.140)" data-linktype="absolute-path">Пошаговое руководство. Создание базового компонента среды выполнения Windows в C++ и его вызов из JavaScript</a></p>
+</li>
+<li><p>
+              <a href="/ru-ru/previous-versions/windows/apps/hh699893(v=vs.140)" data-linktype="absolute-path">Оптимизатор поездок Bing Maps, приложение Магазина Windows на JavaScript и C++</a></p>
+</li>
+<li><p>
+              <a href="https://devblogs.microsoft.com/pfxteam/how-to-use-c-amp-from-c-using-winrt/" data-linktype="external">Использование C++ AMP из C# с помощью среды выполнения Windows</a></p>
+</li>
+<li><p>
+              <a href="https://devblogs.microsoft.com/pfxteam/how-to-use-c-amp-from-c/" data-linktype="external">Использование C++ AMP из C#</a></p>
+</li>
+<li><p>
+              <a href="../../dotnet/calling-native-functions-from-managed-code?view=msvc-160" data-linktype="relative-path">Вызов неуправляемых функций из управляемого кода</a></p>
+</li>
+</ul>
+<h2 id="c-amp-and-concurrency-visualizer">Визуализатор C++ AMP и Визуализатор параллелизма</h2>
+<p>Визуализатор параллелизма включает поддержку анализа производительности кода C++ AMP. В этих статьях описаны следующие функции:</p>
+<ul>
+<li><p>
+              <a href="/ru-ru/visualstudio/profiling/gpu-activity-graph" data-linktype="absolute-path">Граф действий GPU</a></p>
+</li>
+<li><p>
+              <a href="/ru-ru/visualstudio/profiling/gpu-activity-paging" data-linktype="absolute-path">Действие GPU (разбиение на страницы)</a></p>
+</li>
+<li><p>
+              <a href="/ru-ru/visualstudio/profiling/gpu-activity-this-process" data-linktype="absolute-path">Действие GPU (этот процесс)</a></p>
+</li>
+<li><p>
+              <a href="/ru-ru/visualstudio/profiling/gpu-activity-other-processes" data-linktype="absolute-path">Действие GPU (другие процессы)</a></p>
+</li>
+<li><p>
+              <a href="/ru-ru/visualstudio/profiling/channels-threads-view" data-linktype="absolute-path">Каналы (вид потоков)</a></p>
+</li>
+<li><p>
+              <a href="/ru-ru/archive/blogs/nativeconcurrency/analyzing-c-amp-code-with-the-concurrency-visualizer" data-linktype="absolute-path">Анализ кода AMP C++ с помощью визуализатора параллелизма</a></p>
+</li>
+</ul>
+<h2 id="performance-recommendations">Рекомендации по производительности</h2>
+<p>Модулы и деление целых чисел без знака имеют значительно лучшую производительность, чем модулы и деление целочисленных чисел со знаком. Рекомендуется использовать целые числа без знака, если это возможно.</p>
+<h2 id="see-also">См. также</h2>
+<p>
+              <a href="cpp-amp-cpp-accelerated-massive-parallelism?view=msvc-160" data-linktype="relative-path">C++ AMP (C++ Ускоренная массовая параллелизм)</a><br>
+
+              <a href="../../cpp/lambda-expression-syntax?view=msvc-160" data-linktype="relative-path">Синтаксис лямбда-выражения</a><br>
+
+              <a href="reference/reference-cpp-amp?view=msvc-160" data-linktype="relative-path">Справочник (C++ AMP)</a><br>
+
+              <a href="/ru-ru/archive/blogs/nativeconcurrency/" data-linktype="absolute-path">Параллельное программирование в блоге о нативном коде</a></p>
+</div>
+					
+		<div
+			id="ms--inline-notifications"
+			class="margin-block-xs"
+			data-bi-name="inline-notification"
+		></div>
+	 
+		<div
+			id="assertive-live-region"
+			role="alert"
+			aria-live="assertive"
+			class="visually-hidden"
+			aria-relevant="additions"
+			aria-atomic="true"
+		></div>
+		<div
+			id="polite-live-region"
+			role="status"
+			aria-live="polite"
+			class="visually-hidden"
+			aria-relevant="additions"
+			aria-atomic="true"
+		></div>
+	
+					
+				</div>
+				
+		<div id="ms--additional-resources-mobile" class="display-none-print">
+			<hr class="hr" hidden />
+			<h2 id="ms--additional-resources-mobile-heading" class="title is-3" hidden>
+				Дополнительные ресурсы
+			</h2>
+			 
+		<section
+			id="right-rail-training-mobile"
+			class=""
+			data-bi-name="learning-resource-card"
+			hidden
+		></section>
+	 
+		<section
+			id="right-rail-events-mobile"
+			class=""
+			data-bi-name="events-card"
+			hidden
+		></section>
+	
+		</div>
+	 
+		<div
+			id="article-metadata-footer"
+			data-bi-name="article-metadata-footer"
+			data-test-id="article-metadata-footer"
+			class="page-metadata-container"
+		>
+			<hr class="hr" />
+			<ul class="metadata page-metadata" data-bi-name="page info" lang="ru-ru" dir="ltr">
+				<li class="visibility-hidden-visual-diff">
+			<span class="badge badge-sm text-wrap-pretty">
+				<span>Last updated on <local-time format="twoDigitNumeric"
+		datetime="2018-11-19T00:00:00.000Z"
+		data-article-date-source="ms.date"
+		class="is-invisible"
+	>
+		2018-11-19
+	</local-time></span>
+			</span>
+		</li>
+			</ul>
+		</div>
+	
+			</div>
+			
+		<div
+			id="action-panel"
+			role="region"
+			aria-label="Панель действий"
+			class="action-panel"
+			tabindex="-1"
+		></div>
+	
+		
+				</main>
+				<aside
+					id="layout-body-aside"
+					class="layout-body-aside "
+					data-bi-name="aside"
+					aria-label="Дополнительные ресурсы"
+			  >
+					
+		<div
+			id="ms--additional-resources"
+			class="right-container padding-sm display-none display-block-desktop height-full"
+			data-bi-name="pageactions"
+		>
+			<div id="affixed-right-container" data-bi-name="right-column">
+				
+		<nav
+			id="side-doc-outline"
+			class="doc-outline border-bottom padding-bottom-xs margin-bottom-xs"
+			data-bi-name="intopic toc"
+			aria-label="В этой статье"
+		>
+			<h3>В этой статье</h3>
+		</nav>
+	
+				<!-- Feedback -->
+				
+			</div>
+		</div>
+	
+			  </aside> <section
+					id="layout-body-flyout"
+					class="layout-body-flyout "
+					data-bi-name="flyout"
+			  >
+					 <div
+	class="height-full border-left background-color-body-medium"
+	id="ask-learn-flyout"
+></div>
+			  </section> <div class="layout-body-footer " data-bi-name="layout-footer">
+		<footer
+			id="footer"
+			data-test-id="footer"
+			data-bi-name="footer"
+			class="footer-layout has-padding has-default-focus border-top  uhf-container"
+			role="contentinfo"
+		>
+			<div class="display-flex gap-xs flex-wrap-wrap is-full-height padding-right-lg-desktop">
+				
+		<a
+			data-mscc-ic="false"
+			href="#"
+			data-bi-name="select-locale"
+			class="locale-selector-link flex-shrink-0 button button-sm button-clear external-link-indicator"
+			id=""
+			title=""
+			><span class="icon" aria-hidden="true"
+				><span class="docon docon-world"></span></span
+			><span class="local-selector-link-text">ru-ru</span></a
+		>
+	 <div class="ccpa-privacy-link" data-ccpa-privacy-link hidden>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://aka.ms/yourcaliforniaprivacychoices"
+			data-bi-name="your-privacy-choices"
+			class="button button-sm button-clear flex-shrink-0 external-link-indicator"
+			id=""
+			title=""
+			>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 30 14"
+			xml:space="preserve"
+			height="16"
+			width="43"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path
+				d="M7.4 12.8h6.8l3.1-11.6H7.4C4.2 1.2 1.6 3.8 1.6 7s2.6 5.8 5.8 5.8z"
+				style="fill-rule:evenodd;clip-rule:evenodd;fill:#fff"
+			></path>
+			<path
+				d="M22.6 0H7.4c-3.9 0-7 3.1-7 7s3.1 7 7 7h15.2c3.9 0 7-3.1 7-7s-3.2-7-7-7zm-21 7c0-3.2 2.6-5.8 5.8-5.8h9.9l-3.1 11.6H7.4c-3.2 0-5.8-2.6-5.8-5.8z"
+				style="fill-rule:evenodd;clip-rule:evenodd;fill:#06f"
+			></path>
+			<path
+				d="M24.6 4c.2.2.2.6 0 .8L22.5 7l2.2 2.2c.2.2.2.6 0 .8-.2.2-.6.2-.8 0l-2.2-2.2-2.2 2.2c-.2.2-.6.2-.8 0-.2-.2-.2-.6 0-.8L20.8 7l-2.2-2.2c-.2-.2-.2-.6 0-.8.2-.2.6-.2.8 0l2.2 2.2L23.8 4c.2-.2.6-.2.8 0z"
+				style="fill:#fff"
+			></path>
+			<path
+				d="M12.7 4.1c.2.2.3.6.1.8L8.6 9.8c-.1.1-.2.2-.3.2-.2.1-.5.1-.7-.1L5.4 7.7c-.2-.2-.2-.6 0-.8.2-.2.6-.2.8 0L8 8.6l3.8-4.5c.2-.2.6-.2.9 0z"
+				style="fill:#06f"
+			></path>
+		</svg>
+	
+			<span>Ваши варианты выбора параметров конфиденциальности</span></a
+		>
+	
+	</div>
+				<div class="flex-shrink-0">
+		<div class="dropdown has-caret-up">
+			<button
+				data-test-id="theme-selector-button"
+				class="dropdown-trigger button button-clear button-sm inner-focus theme-dropdown-trigger"
+				aria-controls="{{ themeMenuId }}"
+				aria-expanded="false"
+				title="Тема"
+				data-bi-name="theme"
+			>
+				<span class="icon">
+					<span class="docon docon-sun" aria-hidden="true"></span>
+				</span>
+				<span>Тема</span>
+				<span class="icon expanded-indicator" aria-hidden="true">
+					<span class="docon docon-chevron-down-light"></span>
+				</span>
+			</button>
+			<div class="dropdown-menu" id="{{ themeMenuId }}" role="menu">
+				<ul class="theme-selector padding-xxs" data-test-id="theme-dropdown-menu">
+					<li class="theme display-block">
+						<button
+							class="button button-clear button-sm theme-control button-block justify-content-flex-start text-align-left"
+							data-theme-to="light"
+						>
+							<span class="theme-light margin-right-xxs">
+								<span
+									class="theme-selector-icon border display-inline-block has-body-background"
+									aria-hidden="true"
+								>
+									<svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">
+										<rect width="22" height="14" class="has-fill-body-background" />
+										<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+										<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+										<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+										<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+										<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+									</svg>
+								</span>
+							</span>
+							<span role="menuitem"> Светлая </span>
+						</button>
+					</li>
+					<li class="theme display-block">
+						<button
+							class="button button-clear button-sm theme-control button-block justify-content-flex-start text-align-left"
+							data-theme-to="dark"
+						>
+							<span class="theme-dark margin-right-xxs">
+								<span
+									class="border theme-selector-icon display-inline-block has-body-background"
+									aria-hidden="true"
+								>
+									<svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">
+										<rect width="22" height="14" class="has-fill-body-background" />
+										<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+										<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+										<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+										<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+										<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+									</svg>
+								</span>
+							</span>
+							<span role="menuitem"> Темная </span>
+						</button>
+					</li>
+					<li class="theme display-block">
+						<button
+							class="button button-clear button-sm theme-control button-block justify-content-flex-start text-align-left"
+							data-theme-to="high-contrast"
+						>
+							<span class="theme-high-contrast margin-right-xxs">
+								<span
+									class="border theme-selector-icon display-inline-block has-body-background"
+									aria-hidden="true"
+								>
+									<svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">
+										<rect width="22" height="14" class="has-fill-body-background" />
+										<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+										<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+										<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+										<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+										<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+									</svg>
+								</span>
+							</span>
+							<span role="menuitem"> Высокая контрастность </span>
+						</button>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+			</div>
+			<ul class="links" data-bi-name="footerlinks">
+				<li class="manage-cookies-holder" hidden=""></li>
+				<li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/ru-ru/principles-for-ai-generated-content"
+			data-bi-name="aiDisclaimer"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Заявление об отказе ИИ</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/ru-ru/previous-versions/"
+			data-bi-name="archivelink"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Предыдущие версии</a
+		>
+	
+	</li> <li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://techcommunity.microsoft.com/t5/microsoft-learn-blog/bg-p/MicrosoftLearnBlog"
+			data-bi-name="bloglink"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Блог</a
+		>
+	
+	</li> <li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/ru-ru/contribute"
+			data-bi-name="contributorGuide"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Участие в доработке</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://go.microsoft.com/fwlink/?LinkId=521839"
+			data-bi-name="privacy"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Конфиденциальность</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://go.microsoft.com/fwlink/?linkid=2259814"
+			data-bi-name="consumer-health-privacy"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Конфиденциальность медицинских данных потребителей</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/ru-ru/legal/termsofuse"
+			data-bi-name="termsofuse"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Условия использования</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://www.microsoft.com/legal/intellectualproperty/Trademarks/"
+			data-bi-name="trademarks"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Товарные знаки</a
+		>
+	
+	</li>
+				<li>&copy; Microsoft 2026</li>
+			</ul>
+		</footer>
+	</footer>
+			</body>
+		</html>
