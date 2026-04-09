@@ -6,12 +6,28 @@
 #include "opencl.hpp"
 
 int main() {
+
+
+
 	Device device(select_device_with_most_flops()); // compile OpenCL C code for the fastest available device
+	//смотрим поддержку 64 битных типов
+	printf("fp32 is not supported(0) or supported(1) on this device = %d\n",device.info.is_fp32_capable);
+	printf("int32 is not supported(0) or supported(1) on this device = %d\n", device.info.is_int32_capable);
+	printf("fp64 is not supported(0) or supported(1) on this device = %d\n", device.info.is_fp64_capable);
+	printf("int64 is not supported(0) or supported(1) on this device = %d\n", device.info.is_int64_capable);
+
+	//альтернативный механизм
+	cl_device_fp_config fpConfig; 
+	cl_int status = clGetDeviceInfo(device.info.cl_device(), CL_DEVICE_DOUBLE_FP_CONFIG, sizeof(fpConfig), &fpConfig, NULL);
+	if (fpConfig == 0) { 
+		printf("Double precision is not supported on this device.\n"); 
+		return 1;
+	}
 
 	const uint N = 1024u; // size of vectors
-	Memory<float> A(device, N); // allocate memory on both host and device
-	Memory<float> B(device, N);
-	Memory<float> C(device, N);
+	Memory<double> A(device, N); // allocate memory on both host and device
+	Memory<double> B(device, N);
+	Memory<double> C(device, N);
 
 	Kernel add_kernel(device, N, "add_kernel", A, B, C); // kernel that runs on the device
 
