@@ -22,7 +22,7 @@ LRESULT CALLBACK WindowProcXLL(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
 
 		POINT pointCursor = { 0 };
 		GetCursorPos(&pointCursor);
-		TrackPopupMenuEx(m_hMenu, TPM_TOPALIGN | TPM_LEFTALIGN | TPM_NONOTIFY | TPM_RETURNCMD, pointCursor.x, pointCursor.y, hWnd, NULL);//TrackPopupMenu(m_hMenu, TPM_TOPALIGN | TPM_LEFTALIGN, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), 0, hWndItem, NULL);
+		TrackPopupMenuEx(m_hMenu, TPM_TOPALIGN | TPM_LEFTALIGN | TPM_NONOTIFY | TPM_RETURNCMD, pointCursor.x, pointCursor.y, hWnd, NULL);
 
 		DestroyMenu(m_hMenu);
 
@@ -62,7 +62,7 @@ int main()
 		return -1; 
 	}
 
-	hMainWnd = CreateWindowExW(0, szClassName, L"ClassWindowsXLL", WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW & (~WS_MINIMIZEBOX), 100, 100, 400, 200, NULL, NULL, hInstance, NULL);//eWindowEx(WS_EX_APPWINDOW, szClassName, lpWindowName, WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_VSCROLL| WS_THICKFRAME, (GetSystemMetrics(SM_CXSCREEN) >> 1) - (fWidth >> 1), (GetSystemMetrics(SM_CYSCREEN) >> 1) - (fHeight >> 1), fWidth, fHeight, HwndExcel(), NULL, hInstance, NULL);//HwndExcel()
+	hMainWnd = CreateWindowExW(0, szClassName, L"ClassWindowsXLL", WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW & (~WS_MINIMIZEBOX), 100, 100, 400, 200, NULL, NULL, hInstance, NULL);
 	CreateWindowExW(0, L"Button", L"CreatePopupMenu", WS_CHILD | WS_VISIBLE, 50, 50, 150, 50, hMainWnd, HMENU(333), hInstance, NULL);
 
 	ShowWindow(hMainWnd, SW_NORMAL);
